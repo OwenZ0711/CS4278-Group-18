@@ -4,7 +4,7 @@ Our project is designed to help music lovers who struggle to find a comprehensiv
 
 # Framework
 Front end: Javascript, HTML, and React
-Back end: Python, MySQL
+\nBack end: Python, MySQL
 
 # Project Sections
 - Authentication to Spotify API with OAuthlib. 
