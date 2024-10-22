@@ -1,14 +1,17 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import MySQLdb
 import bcrypt
 
 app = Flask(__name__)
+CORS(app)
 
 # MySQL configurations
 db = MySQLdb.connect(host="localhost",
                      user="root",            # Replace with your MySQL username
-                     passwd="",              # Replace with your MySQL password
-                     db="imusic")            # Replace with your database name
+                     passwd="root",              # Replace with your MySQL password
+                     port="8889",
+                     db="iMusic")            # Replace with your database name
 
 @app.route('/register', methods=['POST'])
 def register():
