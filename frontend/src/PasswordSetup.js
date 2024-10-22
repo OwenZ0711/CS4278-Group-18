@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './PasswordSetup.css';  // Add CSS for styling the password page
+import './PasswordSetup.css';
 
 function PasswordSetup() {
   const [passwordData, setPasswordData] = useState({
@@ -12,7 +12,8 @@ function PasswordSetup() {
     
     if (passwordData.password === passwordData.confirmPassword) {
       console.log('Password set successfully!');
-      // Add logic for submitting the password setup (e.g., API call)
+      // Redirect to the Spotify Account linking page
+      window.location.href = '/spotify-account';
     } else {
       alert('Passwords do not match');
     }
