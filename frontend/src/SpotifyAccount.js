@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './SpotifyAccount.css'; // Add CSS for styling
+import './SpotifyAccount.css';  // Assuming you have CSS for styling
 
 function SpotifyAccount() {
   const [spotifyAccount, setSpotifyAccount] = useState('');
@@ -13,6 +13,11 @@ function SpotifyAccount() {
   const handleCancel = () => {
     // Add logic for canceling or redirecting
     console.log('Linking cancelled');
+  };
+
+  const handleNextStep = () => {
+    // Redirect to the Country, State, City selection page
+    window.location.href = '/location-selection';
   };
 
   return (
@@ -36,6 +41,10 @@ function SpotifyAccount() {
           <button type="button" className="cancel-button" onClick={handleCancel}>Cancel</button>
         </div>
       </form>
+
+      {/* New Next Step button */}
+      <button className="next-button" onClick={handleNextStep}>Next Step</button>
+
     </div>
   );
 }
