@@ -1,0 +1,101 @@
+/* General reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body styling for the login page */
+body.login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+/* Centering the container */
+.login-container {
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Styling the heading */
+h1 {
+  font-size: 3.5em;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+/* Styling the form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Form group styling for input fields */
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: left;
+}
+
+.form-group label {
+  font-size: 1.1em;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+/* Grouping the checkboxes */
+.checkbox-group {
+  margin-bottom: 15px;
+  text-align: left;
+  width: 100%;
+}
+
+.checkbox-group input {
+  margin-right: 10px;
+}
+
+.checkbox-group a {
+  color: #6a5acd;
+  text-decoration: none;
+}
+
+.checkbox-group a:hover {
+  text-decoration: underline;
+}
+
+/* Styling the button */
+.login-button {
+  background-color: #6a5acd;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 50px;
+  font-size: 1.2em;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.login-button:hover {
+  background-color: #483d8b;
+}
+
+/* Adjust form spacing */
+form {
+  width: 100%;
+  max-width: 350px;
+}

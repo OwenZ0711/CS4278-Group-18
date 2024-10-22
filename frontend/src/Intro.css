@@ -1,0 +1,58 @@
+/* General reset for padding and margins */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Style the body */
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+/* Center the content vertically and horizontally */
+.container {
+    text-align: center;
+}
+
+/* Style the heading */
+h1 {
+    font-size: 4em;
+    font-weight: bold;
+    margin-bottom: 50px;
+}
+
+/* Style the buttons */
+button {
+    background-color: #6a5acd;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 15px 40px;
+    font-size: 1.2em;
+    cursor: pointer;
+    margin: 10px;
+    display: inline-block;
+}
+
+/* Add hover effect to buttons */
+button:hover {
+    background-color: #483d8b;
+}
+
+/* Remove button focus outlines */
+button:focus {
+    outline: none;
+}
+
+/* Button container margin to space out the buttons */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
