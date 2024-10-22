@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Login.css';  // Use the correct CSS file
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -9,19 +10,38 @@ function Login() {
     keepLoggedIn: false,
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
-  };
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Perform login logic here
-    console.log(formData);
-  };
+    
+    try {
+        const response = await fetch('http://localhost:5000/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: formData.email,
+                password: formData.password
+            })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            // Successful login logic
+            alert('Login successful');
+            navigate('/dashboard'); // Redirect user to the dashboard or main page
+        } else {
+            // Handle login error
+            alert(`Error: ${result.message}`);
+        }
+    } catch (error) {
+        alert('There was an error connecting to the server.');
+    }
+};
+
 
   return (
     <div className="login-container">

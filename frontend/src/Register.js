@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Register.css';  // Make sure to link the correct CSS file
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -7,6 +8,8 @@ function Register() {
     code: '',
     agreement: false,
   });
+  const [currentStep, setCurrentStep] = useState(1);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -16,16 +19,39 @@ function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add logic for form submission or code verification
-    console.log(formData);
+    
+    // Send registration data to backend
+    try {
+      const response = await fetch('http://localhost:5000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          step: 1,
+          email: formData.email,
+          // code: formData.code
+        })
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message);
+        setCurrentStep(2);
+      } else {
+        alert(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      alert('There was an error connecting to the server.');
+    }
+
+    navigate('/login'); //need to be modified
   };
 
-  const handleGetCode = () => {
-    // Logic to get the verification code
-    alert("Verification code sent!");
-  };
+  // const handleGetCode = () => {
+  //   // Logic to get the verification code
+  //   alert("Verification code sent!");
+  // };
 
   return (
     <div className="register-container">
