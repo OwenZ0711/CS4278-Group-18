@@ -1,0 +1,33 @@
+/* General layout */
+.location-selection-container {
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 50px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  select, input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .finish-button {
+    background-color: #6a5acd;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .finish-button:hover {
+    background-color: #483d8b;
+  }

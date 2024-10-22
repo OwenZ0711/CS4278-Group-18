@@ -1,60 +1,53 @@
 import React, { useState } from 'react';
-import './Register.css';  // Make sure to link the correct CSS file
+import './Register.css';
 
 function Register() {
   const [formData, setFormData] = useState({
     email: '',
-    code: '',
+    verificationCode: '',
     agreement: false,
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
+  const handleGetCode = () => {
+    // Logic to generate or send verification code goes here
+    alert('Verification code sent to ' + formData.email);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add logic for form submission or code verification
-    console.log(formData);
-  };
-
-  const handleGetCode = () => {
-    // Logic to get the verification code
-    alert("Verification code sent!");
+    console.log('Registering:', formData);
+    // After form submission, redirect to the Password Setup page
+    window.location.href = '/password-setup';
   };
 
   return (
     <div className="register-container">
-      <h1>iMusic</h1>
-      <form className="register-form" onSubmit={handleSubmit}>
+      <h1>Register for iMusic</h1>
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="email">Email Address</label>
+          <label>Email Address</label>
           <input
             type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
+            placeholder="Email Address"
             required
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="code">Verification Code</label>
+          <label>Verification Code</label>
           <div className="verification-group">
             <input
               type="text"
-              id="code"
-              name="code"
-              value={formData.code}
-              onChange={handleChange}
+              placeholder="Enter verification code"
               required
+              value={formData.verificationCode}
+              onChange={(e) => setFormData({ ...formData, verificationCode: e.target.value })}
             />
-            <button type="button" className="get-code-button" onClick={handleGetCode}>Get Code</button>
+            <button type="button" className="get-code-button" onClick={handleGetCode}>
+              Get Code
+            </button>
           </div>
         </div>
 
@@ -64,10 +57,10 @@ function Register() {
               type="checkbox"
               name="agreement"
               checked={formData.agreement}
-              onChange={handleChange}
+              onChange={(e) => setFormData({ ...formData, agreement: e.target.checked })}
               required
             />
-            I have read and agreed with the <a href="#user-agreement">user agreement</a>
+            I have read and agree with the <a href="#user-agreement">User Agreement</a>
           </label>
         </div>
 
