@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './PasswordSetup.css';
+import { useNavigate } from 'react-router-dom';
 
 function PasswordSetup() {
   const [passwordData, setPasswordData] = useState({

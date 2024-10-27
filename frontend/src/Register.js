@@ -42,7 +42,7 @@ function Register() {
       alert('There was an error connecting to the server.');
     }
 
-    navigate('/login'); //need to be modified
+    navigate('/password-setup');
   };
 
   // const handleGetCode = () => {
