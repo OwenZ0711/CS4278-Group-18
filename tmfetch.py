@@ -1,10 +1,10 @@
 import requests
 import json
 import pandas as pd
+from sqlalchemy import create_engine
 
 API_KEY = 'NDuQyZHdaWVNgxW9ss0aS896Fu84VUmo'
 BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
-
 
 def get_artist_events(artist_name):
     params = {
@@ -21,7 +21,6 @@ def get_artist_events(artist_name):
     else:
         print(f"Failed to retrieve events for {artist_name}. Status code: {response.status_code}")
         return None
-
 
 def extract_event_details(events_data, artist_name):
     event_list = []
@@ -50,7 +49,6 @@ def extract_event_details(events_data, artist_name):
 
     return event_list
 
-
 artists = ['Coldplay', 'Taylor Swift', 'Post Malone']
 
 all_events = []
@@ -66,13 +64,16 @@ df = pd.DataFrame(all_events)
 
 print(df)
 
-from sqlalchemy import create_engine
+# Updated connection string to connect to AWS RDS instance
+db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6sgv.us-east-2.rds.amazonaws.com:3306/iMusic'
 
-db_connection_str = 'mysql+mysqlconnector://root:root@localhost:8889/iMusic'
-
+# Create SQLAlchemy engine to connect to the RDS database
 engine = create_engine(db_connection_str)
 
+# Export the DataFrame to the 'events' table in the 'iMusic' database
 df.to_sql('events', con=engine, if_exists='replace', index=False)
+
+print("Data successfully exported to the database.")
 
 
 

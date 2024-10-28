@@ -12,29 +12,10 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: iMusic
-        ports:
-          - 8889:3306 #map MySQL container's default port (3306) to 8889
-        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
-
     steps:
     # Checkout repository code
     - name: Checkout repository
       uses: actions/checkout@v2
-
-    # Set environment variables
-    - name: Set environment variables
-      run: 
-        echo "FLASK_SECRET_KEY=${{ secrets.FLASK_SECRET_KEY }}" >> $GITHUB_ENV
-        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-        echo "MYSQL_PORT=8889" >> $GITHUB_ENV
-        echo "MYSQL_HOST=localhost" >> $GITHUB_ENV
-
 
     # Set up Node.js (Frontend)
     - name: Set up Node.js
@@ -47,10 +28,10 @@ jobs:
       working-directory: ./frontend
       run: npm install
 
-    # # Run frontend tests
-    # - name: Run frontend tests
-    #   working-directory: ./frontend
-    #   run: npm test
+    # Run frontend tests
+    - name: Run frontend tests
+      working-directory: ./frontend
+      run: npm test
 
     # Build frontend
     - name: Build frontend
@@ -63,6 +44,13 @@ jobs:
       with:
         python-version: '3.9' # Adjust Python version as needed
 
+    # Set environment variables for RDS connection
+    - name: Set RDS environment variables
+      run: |
+        echo "RDS_HOSTNAME=${{ secrets.RDS_HOSTNAME }}" >> $GITHUB_ENV
+        echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> $GITHUB_ENV
+        echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> $GITHUB_ENV
+  
     # Install Python dependencies
     - name: Install dependencies for backend
       working-directory: ./backend

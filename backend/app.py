@@ -7,9 +7,15 @@ from sqlalchemy import create_engine
 
 db_connection_str = 'mysql+mysqlconnector://root:root@127.0.0.1:8889/iMusic'
 
-db = create_engine(db_connection_str)
-print(db)
+import os
+import MySQLdb
 
+db = MySQLdb.connect(
+    host=os.getenv("RDS_HOSTNAME"),
+    user=os.getenv("RDS_USERNAME"),
+    passwd=os.getenv("RDS_PASSWORD"),
+    db="imusic"
+)
 
 app = Flask(__name__)
 CORS(app)
