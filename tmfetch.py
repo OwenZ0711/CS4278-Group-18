@@ -65,7 +65,7 @@ df = pd.DataFrame(all_events)
 print(df)
 
 # Updated connection string to connect to AWS RDS instance
-db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6sgv.us-east-2.rds.amazonaws.com:3306/iMusic'
+db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6sgv.us-east-2.rds.amazonaws.com:3306/imusic'
 
 # Create SQLAlchemy engine to connect to the RDS database
 engine = create_engine(db_connection_str)
@@ -74,6 +74,3 @@ engine = create_engine(db_connection_str)
 df.to_sql('events', con=engine, if_exists='replace', index=False)
 
 print("Data successfully exported to the database.")
-
-
-
