@@ -1,22 +1,50 @@
 import React, { useState } from 'react';
 import './PasswordSetup.css';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function PasswordSetup() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [passwordData, setPasswordData] = useState({
     password: '',
     confirmPassword: '',
   });
 
-  const handleSubmit = (e) => {
+  const email = location.state?.email;
+
+  if (!email) {
+    // If email is missing, redirect to register page
+    navigate('/register');
+    return null;
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (passwordData.password === passwordData.confirmPassword) {
-      console.log('Password set successfully!');
-      // Redirect to the Spotify Account linking page
-      window.location.href = '/spotify-account';
-    } else {
+    if (passwordData.password !== passwordData.confirmPassword) {
       alert('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/password-setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email,
+          password: passwordData.password,
+        })
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('Password set successfully!');
+        navigate('/spotify-account');
+      } else {
+        alert(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      alert('There was an error connecting to the server.');
     }
   };
 
