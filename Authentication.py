@@ -1,11 +1,9 @@
 from oauthlib.oauth2 import WebApplicationClient
-import Authentication as auth
 import urllib.parse
 import requests
 from flask import Flask, request, redirect, session, url_for, jsonify
 from datetime import datetime
 from flask import Flask, render_template, flash, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
@@ -26,7 +24,7 @@ def is_token_expired():
 app_main = Flask(__name__)
 app_main.config['SECRET_KEY'] = 'your_secret_key'
 app_main.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Or any other database
-db = SQLAlchemy(app_main)
+db = None
 login_manager = LoginManager(app_main)
 app_main.secret_key = "427842784278427842784278"
 
