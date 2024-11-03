@@ -25,7 +25,7 @@ def is_token_expired():
 app_main = Flask(__name__)
 app_main.config['SECRET_KEY'] = 'your_secret_key'
 app_main.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Or any other database
-db = None
+db = SQLAlchemy(app_main)
 login_manager = LoginManager(app_main)
 app_main.secret_key = "427842784278427842784278"
 
@@ -124,7 +124,7 @@ def get_playlists():
     response = requests.get(API_BASE_URL + "me/playlists",headers=headers)
     playlists = response.json()
     # artist list finish here
-    new_user = User(email=session['new_email'], password=session['new_password'])#, artist = artist)
+    # new_user = User(email=session['new_email'], password=session['new_password'])#, artist = artist)
     return jsonify(playlists)
     
         
