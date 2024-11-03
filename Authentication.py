@@ -3,6 +3,7 @@ import urllib.parse
 import requests
 from flask import Flask, request, redirect, session, url_for, jsonify
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, flash, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -31,6 +32,7 @@ app_main.secret_key = "427842784278427842784278"
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+  # use user_id to find user information in User class table?
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -47,15 +49,16 @@ def root():
 def index():
   state = None
   scope = None
-  return("Welcome! Please <a href='/musicApp/login'>login with your Spotify account</a>.")
+  return("Welcome! Please <a href='/musicApp/login'>login with your Spotify account</a>. Welcome! Please <a href='/musicApp/register'>register with your Spotify account</a>.")
 
-@app_main.route('/register', methods=['GET', 'POST'])
+@app_main.route('/musicApp/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
         hashed_password = generate_password_hash(password, method='sha256')
-
+        session['new_email'] = email
+        session['new_password'] = password
         new_user = User(email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
@@ -65,17 +68,18 @@ def register():
 
 @app_main.route("/musicApp/login", methods=['GET', 'POST'])
 def user_login():
+  session['user_email'] = "owen"
   print("user login page\n")
   print("authentication needed \n")
   scope = 'user-read-private user-read-email'
   params = {
             'response_type': 'code',
-            'client_id': auth.CLIENT_ID,
+            'client_id': CLIENT_ID,
             'scope': scope,
-            'redirect_uri': auth.REDIRECT_URI,
+            'redirect_uri': REDIRECT_URI,
             'show dialog': True
         }
-  auth_url = f"{auth.AUTH_URL}?{urllib.parse.urlencode(params)}"
+  auth_url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"
   print(auth_url)
   print("redirecting to auth url... \n")
   return redirect(auth_url)
@@ -92,22 +96,22 @@ def callback():
     req_body = {
         'code': code,
         'grant_type': 'authorization_code',
-        'redirect_uri': auth.REDIRECT_URI,
-        'client_id': auth.CLIENT_ID,
-        'client_secret': auth.CLIENT_SECRET_ID
+        'redirect_uri': REDIRECT_URI,
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET_ID
     }
-    response = requests.post(auth.TOKEN_URL, data=req_body)
+    response = requests.post(TOKEN_URL, data=req_body)
     token_info = response.json()
-
-    # Store tokens and expiration time in the session
     session['access_token'] = token_info['access_token']
     session['refresh_token'] = token_info['refresh_token']
     session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
-
+    print(f"Token expires at: {session['expires_at']}")
+    print("redirect to playlist")
     return redirect("/musicApp/playlists")
  
 @app_main.route('/musicApp/playlists')
 def get_playlists():
+    print(session["user_email"])
     if 'access_token' not in session:
         return redirect('/musicApp/login')
 
@@ -117,28 +121,12 @@ def get_playlists():
     headers = {
         'Authorization': f"Bearer {session['access_token']}"
     }
-    response = requests.get(auth.API_BASE_URL + "me/playlists",headers=headers)
+    response = requests.get(API_BASE_URL + "me/playlists",headers=headers)
     playlists = response.json()
+    # artist list finish here
+    new_user = User(email=session['new_email'], password=session['new_password'])#, artist = artist)
     return jsonify(playlists)
     
-    
-@app_main.route('/musicApp/refresh-token')
-def refresh_token():
-  if 'refresh_token' not in session:
-    return redirect('/musicApp/login')
-  if datetime.now().timestamp() > session['expires_at']:
-    req_body = {
-      'grant_type': 'refresh_token',
-      'refresh_token': session['refresh_token'],
-      'client_id': auth.CLIENT_ID,
-      'client_secret': auth.CLIENT_SECRET_ID
-    }
-    response = requests.post(auth.TOKEN_URL, data=req_body)
-    new_token_info = response.json()
-
-    session['access_token'] = new_token_info['access_token']
-    session['expires_at'] = datetime.now().timestamp() + new_token_info['expires_in']
-    return redirect('/musicApp/playlists')
         
 if __name__ == '__main__':
   app_main.run(debug=True)
