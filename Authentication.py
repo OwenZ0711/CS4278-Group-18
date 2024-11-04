@@ -7,10 +7,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, flash, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+import time
+
 
 CLIENT_ID = '5de8da9998ff4436abab42f799e1476c' # trail clients id
 CLIENT_SECRET_ID = 'ed07ca9837c240fea4b153a56566f3b0'
-REDIRECT_URI = 'http://127.0.0.1:5000/musicApp/callback'
+REDIRECT_URI = 'http://127.0.0.1:5000/loading'
 AUTH_URL = 'https://accounts.spotify.com/authorize'
 TOKEN_URL = 'https://accounts.spotify.com/api/token'
 API_BASE_URL = 'https://api.spotify.com/v1/'
@@ -42,16 +44,12 @@ class User(UserMixin, db.Model):
     spotify_refresh_token = db.Column(db.String(500))
 
 @app_main.route('/')
-def root():
-  return redirect("/musicApp")
-
-@app_main.route('/musicApp')
 def index():
-  state = None
-  scope = None
-  return("Welcome! Please <a href='/musicApp/login'>login with your Spotify account</a>. Welcome! Please <a href='/musicApp/register'>register with your Spotify account</a>.")
+    state = None
+    scope = None
+    return("Welcome! Please <a href='/login'>login with your Spotify account</a>. Welcome! Please <a href='/register'>register with your Spotify account</a>.")
 
-@app_main.route('/musicApp/register', methods=['GET', 'POST'])
+@app_main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -62,54 +60,54 @@ def register():
         new_user = User(email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('login'))
+        return redirect(url_for('/ogin'))
     
     return render_template('register.html')
 
-@app_main.route("/musicApp/login", methods=['GET', 'POST'])
+@app_main.route("/login", methods=['GET', 'POST'])
 def user_login():
-  session['user_email'] = "owen"
-  print("user login page\n")
-  print("authentication needed \n")
-  scope = 'user-read-private user-read-email'
-  params = {
-            'response_type': 'code',
-            'client_id': CLIENT_ID,
-            'scope': scope,
-            'redirect_uri': REDIRECT_URI,
-            'show dialog': True
-        }
-  auth_url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"
-  print(auth_url)
-  print("redirecting to auth url... \n")
-  return redirect(auth_url)
+    session['user_email'] = "owen"
+    print("user login page\n")
+    print("authentication needed \n")
+    scope = 'user-read-private user-read-email playlist-read-private'
+    params = {
+              'response_type': 'code',
+              'client_id': CLIENT_ID,
+              'scope': scope,
+              'redirect_uri': REDIRECT_URI,
+              'show dialog': False
+          }
+    auth_url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"
+    print(auth_url)
+    print("redirecting to auth url... \n")
+    return redirect(auth_url)
 
-@app_main.route("/musicApp/callback")
+@app_main.route("/loading")
 def callback():
-  print('callback called')
-  if 'error' in request.args:
-    return jsonify({"error": request.args['error']})
-  
-  if 'code' in request.args:
-    code = request.args['code']
-    # Exchange the code for an access token
-    req_body = {
-        'code': code,
-        'grant_type': 'authorization_code',
-        'redirect_uri': REDIRECT_URI,
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET_ID
-    }
-    response = requests.post(TOKEN_URL, data=req_body)
-    token_info = response.json()
-    session['access_token'] = token_info['access_token']
-    session['refresh_token'] = token_info['refresh_token']
-    session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
-    print(f"Token expires at: {session['expires_at']}")
-    print("redirect to playlist")
-    return redirect("/musicApp/playlists")
+    print('callback called')
+    if 'error' in request.args:
+      return jsonify({"error": request.args['error']})
+    
+    if 'code' in request.args:
+      code = request.args['code']
+      # Exchange the code for an access token
+      req_body = {
+          'code': code,
+          'grant_type': 'authorization_code',
+          'redirect_uri': REDIRECT_URI,
+          'client_id': CLIENT_ID,
+          'client_secret': CLIENT_SECRET_ID
+      }
+      response = requests.post(TOKEN_URL, data=req_body)
+      token_info = response.json()
+      session['access_token'] = token_info['access_token']
+      session['refresh_token'] = token_info['refresh_token']
+      session['expires_at'] = datetime.now().timestamp() + token_info['expires_in']
+      print(f"Access_token: {session['access_toekn']}")
+      print("redirect to playlist")
+      return redirect("/playlists")
  
-@app_main.route('/musicApp/playlists')
+@app_main.route('/playlists')
 def get_playlists():
     print(session["user_email"])
     if 'access_token' not in session:
@@ -121,15 +119,18 @@ def get_playlists():
     headers = {
         'Authorization': f"Bearer {session['access_token']}"
     }
-    response = requests.get(API_BASE_URL + "me/playlists",headers=headers)
-    playlists = response.json()
+    response = requests.get(API_BASE_URL + "me",headers=headers)
+    session.pop('access_token', None)
+    session.pop('refresh_token', None)
+    session.pop('expires_at', None)
+    user_info = response.json()
     # artist list finish here
     # new_user = User(email=session['new_email'], password=session['new_password'])#, artist = artist)
-    return jsonify(playlists)
+    return jsonify(user_info)
     
         
 if __name__ == '__main__':
-  app_main.run(debug=True)
+    app_main.run(host='127.0.0.1', port=5000, debug=True)
 
 
 
