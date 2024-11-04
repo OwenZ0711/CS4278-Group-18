@@ -16,6 +16,7 @@ function LocationSelection() {
     try {
       const response = await fetch('http://localhost:5000/location-selection', {
         method: 'POST',
+        credentials: "include",
         headers: {
           'Content-Type': 'application/json',
         },
@@ -28,6 +29,7 @@ function LocationSelection() {
         // the complete registration endpoint
         const completeResponse = await fetch('http://localhost:5000/complete-registration', {
           method: 'POST',
+          credentials: "include",
           headers: {
             'Content-Type': 'application/json',
           },

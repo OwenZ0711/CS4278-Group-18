@@ -24,6 +24,7 @@ function Login() {
     try {
       const response = await fetch('http://localhost:5000/login', {  // Backend URL
         method: 'POST',
+        credentials: "include",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),  // Send login data to backend
       });

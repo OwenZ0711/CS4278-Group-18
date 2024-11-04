@@ -1,22 +1,13 @@
 import React, { useState } from 'react';
 import './PasswordSetup.css';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function PasswordSetup() {
-  const location = useLocation();
   const navigate = useNavigate();
   const [passwordData, setPasswordData] = useState({
     password: '',
     confirmPassword: '',
   });
-
-  const email = location.state?.email;
-
-  if (!email) {
-    // If email is missing, redirect to register page
-    navigate('/register');
-    return null;
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,9 +20,9 @@ function PasswordSetup() {
     try {
       const response = await fetch('http://localhost:5000/password-setup', {
         method: 'POST',
+        credentials: "include",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: email,
           password: passwordData.password,
         })
       });

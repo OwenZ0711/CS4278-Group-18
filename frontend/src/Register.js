@@ -9,19 +9,20 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Send registration data to backend
     try {
       const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: "include",
         body: JSON.stringify({ email })
       });
 
       const result = await response.json();
       if (response.ok) {
         alert(result.message);
-        navigate('/password-setup', { state: { email } }); // Navigate to password setup page with email
+        navigate('/password-setup'); // Navigate to password setup page with email
       } else {
         alert(`Error: ${result.message}`);
       }
