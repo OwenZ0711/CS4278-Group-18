@@ -39,7 +39,7 @@ function PasswordSetup() {
       const result = await response.json();
       if (response.ok) {
         alert('Password set successfully!');
-        navigate('/spotify-account');
+        navigate('/location-selection');
       } else {
         alert(`Error: ${result.message}`);
       }

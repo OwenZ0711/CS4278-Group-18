@@ -4,7 +4,6 @@ import './Intro.css';
 import Login from './Login';
 import Register from './Register';
 import PasswordSetup from './PasswordSetup'; 
-import SpotifyAccount from './SpotifyAccount'; 
 import LocationSelection from './LocationSelection';
 
 
@@ -36,9 +35,6 @@ function App() {
       
       {/* Password Setup Page */}
       <Route path="/password-setup" element={<PasswordSetup />} />
-
-      {/* Spotify Account Linking page */}
-      <Route path="/spotify-account" element={<SpotifyAccount />} />
 
       {/* Location Selection page */}
       <Route path="/location-selection" element={<LocationSelection />} />

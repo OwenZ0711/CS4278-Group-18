@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './LocationSelection.css';  // Add CSS for styling
+import { useNavigate } from 'react-router-dom';
+import './LocationSelection.css';
 
 function LocationSelection() {
   const [locationData, setLocationData] = useState({
@@ -7,10 +8,45 @@ function LocationSelection() {
     state: 'Tennessee',
   });
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Location Data:', locationData);
-    // Handle the submission of location data
+
+    try {
+      const response = await fetch('http://localhost:5000/location-selection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(locationData),
+      });
+  
+      if (response.ok) {
+        alert('Location saved successfully!');
+  
+        // the complete registration endpoint
+        const completeResponse = await fetch('http://localhost:5000/complete-registration', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (completeResponse.ok) {
+          alert('Registration completed successfully!');
+          navigate('/login'); // Redirect to login after successful registration
+        } else {
+          const errorData = await completeResponse.json();
+          alert(`Error: ${errorData.message}`);
+        }
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
+      }
+    } catch (error) {
+      alert('There was an error connecting to the server.');
+    }
   };
 
   return (

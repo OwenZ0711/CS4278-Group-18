@@ -49,7 +49,7 @@ def extract_event_details(events_data, artist_name):
 
     return event_list
 
-artists = ['Coldplay', 'Taylor Swift', 'Post Malone']
+artists = ['Coldplay', 'Taylor Swift']
 
 all_events = []
 
