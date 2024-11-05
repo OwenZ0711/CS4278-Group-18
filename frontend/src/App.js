@@ -5,6 +5,8 @@ import Login from './Login';
 import Register from './Register';
 import PasswordSetup from './PasswordSetup'; 
 import LocationSelection from './LocationSelection';
+import MyArtist from './MyArtist';
+import MyEventList from './EventList'; 
 
 
 function IntroPage() {
@@ -38,6 +40,12 @@ function App() {
 
       {/* Location Selection page */}
       <Route path="/location-selection" element={<LocationSelection />} />
+
+      {/* My Artist Page */}
+      <Route path="/my-artist" element={<MyArtist />} />
+
+      {/* Event List Page */}
+      <Route path="/event-list" element={<MyEventList />} />
     </Routes>
   );
 }

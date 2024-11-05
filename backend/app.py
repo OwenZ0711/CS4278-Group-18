@@ -5,7 +5,7 @@ import InfoKey as Key
 import bcrypt
 import urllib.parse
 import requests
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date
 import pandas as pd
 
 
@@ -78,10 +78,26 @@ users_table = Table('users', metadata,
                     Column('password', String(255), nullable=False),
                     Column('userlocation', String(255))
                     )
+metadata.create_all(engine)
 
+user_artist_table = Table('userArtist', metadata,
+                          Column('email', String(255), nullable=False),
+                          Column('artist', String(255), nullable=False)
+                          )
+
+# Create the userArtist table if it doesn't exist
+metadata.create_all(engine)
+
+events_table = Table('events', metadata,
+                     Column('artist', String(255), nullable=False),
+                     Column('eventname', String(255), nullable=False),
+                     Column('location', String(255)),
+                     Column('date', Date)
+                    )
+metadata.create_all(engine)
 
 # Create table if it doesn't exist
-metadata.create_all(engine)
+
 
 # Endpoint for email registration step
 @app.route('/register', methods=['POST'])
@@ -92,7 +108,19 @@ def register():
     if not email:
         return jsonify({"message": "Email is required"}), 400
 
-    # Save email to the session
+    # Check if the email already exists in the database
+    try:
+        with engine.connect() as connection:
+            check_stmt = text("SELECT * FROM users WHERE email = :email")
+            result = connection.execute(check_stmt, {"email": email}).fetchone()
+            if result:
+                return jsonify({"message": "Email already exists"}), 400
+
+    except Exception as e:
+        print(f"Error occurred during email check: {str(e)}")
+        return jsonify({"message": f"Error checking email: {str(e)}"}), 500
+
+    # Save email to the session if not already registered
     session['email'] = email
 
     return jsonify({"message": f"Email {email} registered successfully"}), 200
@@ -138,17 +166,16 @@ def complete_registration():
     if not all([email, password, location]):
         return jsonify({"message": "Incomplete registration data"}), 400
 
-    # Save user to the database (using SQLAlchemy)
     try:
-        with engine.connect() as connection:
-            insert_stmt = text("""
-            INSERT INTO users (email, password, userlocation)
-            VALUES (:email, :password, :location)
-            """)
+        with engine.begin() as connection:
+            print("Attempting to insert data into the database...")
             insert_stmt = insert(users_table).values(email=email, password=password, userlocation=location)
             connection.execute(insert_stmt)
+            print("Data inserted successfully!")
     except Exception as e:
+        print(f"Error occurred: {str(e)}")
         return jsonify({"message": f"Error saving to database: {str(e)}"}), 500
+
 
     return jsonify({"message": "Registration completed successfully"}), 200
 
@@ -162,27 +189,31 @@ def user_login():
     if not email or not password:
         return jsonify({"message": "Email and password are required"}), 400
 
-    # Connect to the database and fetch user by email
-    '''
-    with engine.connect() as connection:
-        select_stmt = users_table.select().where(users_table.c.email == email)
-        user = connection.execute(select_stmt).fetchone()
-    '''  
-    return jsonify({"message": "Login successful. Start linking process"}), 200
-    # Check if user exists
-    '''    if not user:
-        return jsonify({"message": "User not found"}), 404
+    try:
+        # Connect to the database and fetch user by email
+        with engine.connect() as connection:
+            select_stmt = text("SELECT * FROM users WHERE email = :email")
+            user = connection.execute(select_stmt, {"email": email}).fetchone()
 
-    #Verify the password
-    stored_hashed_password = user['password']
-    if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
-        session['user_id'] = user['id']  # Save user ID in session
-        session['calling_type'] = "login"
-        print("User login successful. Authentication needed.")
-        return jsonify({"message": "Login successful. Start linking process"}), 200
-    else:
-        return jsonify({"message": "Incorrect password"}), 401
-    '''
+            # Check if user exists
+            if not user:
+                return jsonify({"message": "Email/Password not correct"}), 401
+
+            print(f"User record: {user}")  # Debugging output
+
+            # If `user` is a tuple, adjust the access as needed
+            stored_hashed_password = user[1]  # Assuming `password` is the second column
+
+            if bcrypt.checkpw(password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
+                session['email'] = email  # Save email in session or user ID if applicable
+                print("User login successful.")
+                return jsonify({"message": "Login successful. Start linking process"}), 200
+            else:
+                return jsonify({"message": "Email/Password not correct"}), 401
+
+    except Exception as e:
+        print(f"Error during login: {str(e)}")  # Detailed error output
+        return jsonify({"message": f"An error occurred during login: {str(e)}"}), 500
 
 @app.route("/loading")
 def callback():
@@ -222,21 +253,25 @@ def get_playlists():
     headers = {
         'Authorization': f"Bearer {session['access_token']}"
     }
-    response = requests.get(Key.API_BASE_URL + "me",headers=headers)
+    
+    # Get user info
+    response = requests.get(Key.API_BASE_URL + "me", headers=headers)
     user_info = response.json()
     user_id = user_info['id']
     print(user_id)
-    response = requests.get(Key.API_BASE_URL + f"users/{user_id}/playlists",headers=headers)
+
+    # Get user's playlists
+    response = requests.get(Key.API_BASE_URL + f"users/{user_id}/playlists", headers=headers)
     user_playlist = response.json()
-    playlist_ids = []
-    for single_playlist in user_playlist['items']:
-        playlist_ids.append(single_playlist['id'])
+    playlist_ids = [single_playlist['id'] for single_playlist in user_playlist['items']]
+    
+    # Gather artist information from playlists
     artist_set = {
-                  "name": [],
-                  "id" : [],
-                  }
+        "name": [],
+        "id": [],
+    }
     for id in playlist_ids:
-        response = requests.get(Key.API_BASE_URL + f"playlists/{id}/tracks",headers=headers)
+        response = requests.get(Key.API_BASE_URL + f"playlists/{id}/tracks", headers=headers)
         playlist_items = response.json()['items']
         for item in playlist_items:
             item_track = item["track"]
@@ -249,6 +284,7 @@ def get_playlists():
 
     all_events = []
 
+    # Fetch events for each artist
     for artist in artists:
         print(f"Fetching events for {artist}...")
         events_data = get_artist_events(artist)
@@ -256,23 +292,46 @@ def get_playlists():
             event_details = extract_event_details(events_data, artist)
             all_events.extend(event_details)
 
-    df = pd.DataFrame(all_events)
-    df = df.drop_duplicates()
-    print(df)
+    # Insert events data into the 'events' table
+    email = session.get('email')
+    try:
+        with engine.begin() as connection:
+            # Insert into userArtist table
+            for artist in artists:
+                print(f"Inserting artist {artist} for email {email} into userArtist table...")
+                insert_stmt = insert(user_artist_table).values(email=email, artist=artist)
+                connection.execute(insert_stmt)
+            print("Data inserted successfully into userArtist table!")
 
-    # Updated connection string to connect to AWS RDS instance
-    db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6sgv.us-east-2.rds.amazonaws.com:3306/imusic'
+            # Insert into events table
+            for event in all_events:
+                insert_stmt = insert(events_table).values(
+                    artist=event['Artist Name'],
+                    eventname=event['Event Name'],
+                    location=event['Location'],
+                    date=event['Event Date']
+                )
+                connection.execute(insert_stmt)
+            print("Events data inserted successfully into events table!")
 
-    # Create SQLAlchemy engine to connect to the RDS database
-    engine = create_engine(db_connection_str)
+    except Exception as e:
+        print(f"Error occurred while inserting into database tables: {str(e)}")
+        return jsonify({"message": f"Error inserting into database tables: {str(e)}"}), 500
 
-    # Export the DataFrame to the 'events' table in the 'iMusic' database
-    df.to_sql('events', con=engine, if_exists='replace', index=False)
+    return redirect("http://localhost:3000/my-artist", code=302)
 
-    print("Data successfully exported to the database.")
-        # artist list finish here
-        # new_user = User(email=session['new_email'], password=session['new_password'])#, artist = artist)
-    return jsonify(artist_set)
+@app.route('/artist-list', methods=['GET'])
+def get_artist_list():
+    try:
+        with engine.connect() as connection:
+            select_stmt = text("SELECT artist_id, artist_name FROM userArtist")
+            result = connection.execute(select_stmt).fetchall()
+            artists = [{"id": row['artist_id'], "name": row['artist_name']} for row in result]
+    except Exception as e:
+        return jsonify({"message": f"Error fetching artists: {str(e)}"}), 500
+
+    return jsonify(artists), 200
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

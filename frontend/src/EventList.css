@@ -1,0 +1,98 @@
+/* General Layout */
+.event-list-page {
+    display: flex;
+    height: 100vh; /* Full height of the viewport */
+    margin: 0;
+  }
+  
+  /* Sidebar Styling */
+  .sidebar {
+    width: 200px;
+    background-color: #f0f0f0;
+    height: 100vh; /* Full height of the viewport */
+    padding: 20px;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto; /* Add scroll if the content overflows */
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar li {
+    margin-bottom: 20px;
+  }
+  
+  .sidebar a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1.1em;
+    transition: color 0.3s;
+  }
+  
+  .sidebar a:hover {
+    color: #6a5acd; /* Preferred hover color */
+  }
+  
+  /* Main Content Styling */
+  .event-list-container {
+    margin-left: 0px; /* Shift main content to the right of the sidebar */
+    padding: 20px;
+    flex-grow: 1;
+    box-sizing: border-box;
+    overflow-y: auto; /* Add scrolling if the content overflows */
+  }
+  
+  .search-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar input {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  .search-bar button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .event-list {
+    max-height: 70vh; /* Limit the height of the event list */
+    overflow-y: auto; /* Add a vertical scrollbar if the content exceeds the height */
+    padding-right: 10px; /* Add padding for better appearance */
+  }
+  
+  .event-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .event-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+  
+  .event-info h2 {
+    margin: 0;
+    font-size: 1.2em;
+  }
+  
+  .event-info p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
