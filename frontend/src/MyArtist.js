@@ -11,7 +11,11 @@ function MyArtist() {
     // Fetch the list of artists from the backend endpoint
     const fetchArtists = async () => {
       try {
-        const response = await fetch('http://localhost:5000/artist-list');
+        const response = await fetch('http://localhost:5000/artist-list', {
+          method: 'GET',
+          credentials: "include",
+          headers: { 'Content-Type': 'application/json' }
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

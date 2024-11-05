@@ -311,14 +311,19 @@ def get_playlists():
 
     # Insert events data into the 'events' table
     email = session.get('email')
+    print(f'playlist email {email}')
     try:
+        print("artist name error testing")
         with engine.begin() as connection:
             # Insert into userArtist table
             for artist in artists:
+                print(artist)
                 print(f"Inserting artist {artist} for email {email} into userArtist table...")
                 insert_stmt = insert(user_artist_table).values(email=email, artist=artist)
                 connection.execute(insert_stmt)
             print("Data inserted successfully into userArtist table!")
+
+            
 
             # Insert into events table
             for event in all_events:
@@ -337,18 +342,24 @@ def get_playlists():
 
     return redirect("http://localhost:3000/my-artist", code=302)
 
-@app.route('/artist-list', methods=['GET'])
+@app.route('/artist-list', methods = ['GET'])
 def get_artist_list():
+    print("Session contents:", dict(session))
+    email = session.get('email')  # Retrieve the session's email
+    if not email:
+        return jsonify({"message": "No email found in session."}), 400
+
     try:
         with engine.connect() as connection:
-            select_stmt = text("SELECT artist_id, artist_name FROM userArtist")
-            result = connection.execute(select_stmt).fetchall()
-            artists = [{"id": row['artist_id'], "name": row['artist_name']} for row in result]
+            select_stmt = text("SELECT artist FROM userArtist WHERE email = :email")
+            result = connection.execute(select_stmt, {"email": email}).fetchall()
+            artists = [{"name": row[0]} for row in result]  # Adjusted to match the query result
     except Exception as e:
+        print("Error fetching artists:", str(e))
         return jsonify({"message": f"Error fetching artists: {str(e)}"}), 500
 
     return jsonify(artists), 200
-
+'zzy20020711@gmail.com, 12345'
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
