@@ -253,7 +253,7 @@ def get_playlists():
     headers = {
         'Authorization': f"Bearer {session['access_token']}"
     }
-    
+    '''
     # Get user info
     response = requests.get(Key.API_BASE_URL + "me", headers=headers)
     user_info = response.json()
@@ -281,7 +281,24 @@ def get_playlists():
                     artist_set['name'].append(artist_info['name'])
                     artist_set['id'].append(artist_info['id'])
     artists = artist_set['name']
-
+    '''
+    
+    # Get user liked songs
+    response = requests.get(Key.API_BASE_URL + "me/tracks", headers=headers)
+    liked_songs_album = response.json()
+    liked_songs = liked_songs_album['items']
+    artist_set = {
+        "name": [],
+        "id": [],
+    }
+    for song in liked_songs:
+        track = song['track']
+        artist_list = track["artists"]
+        for artist_info in artist_list:
+            if artist_info['id'] not in artist_set['id']:
+                artist_set['name'].append(artist_info['name'])
+                artist_set['id'].append(artist_info['id'])
+    artists = artist_set['name']
     all_events = []
 
     # Fetch events for each artist

@@ -65,7 +65,7 @@ function Login() {
     url += `&response_type=code`;
     url += `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
     url += `&show_dialog=true`;
-    url += `&scope=user-read-private user-read-email playlist-read-private playlist-read-collaborative`;
+    url += `&scope=user-read-private user-read-email playlist-read-private playlist-read-collaborative user-library-read`;
 
     // Redirect to Spotify's authorization screen
     window.location.href = url;
