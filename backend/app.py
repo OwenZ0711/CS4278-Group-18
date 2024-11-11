@@ -361,5 +361,19 @@ def get_artist_list():
     return jsonify(artists), 200
 'zzy20020711@gmail.com, 12345'
 
+@app.route('/event-list', methods=['GET'])
+def get_event_list():
+    try:
+        with engine.connect() as connection:
+            select_stmt = text("SELECT * FROM events")
+            result = connection.execute(select_stmt).fetchall()
+            events = [{"Artist Name": row['Artist Name'],
+                       "Event Name": row['Event Name'],
+                       "Location": row['Location'],
+                       "Event Date": row['Event Date']} for row in result]
+            return jsonify(events), 200
+    except Exception as e:
+        return jsonify({"message": f"Error fetching events: {str(e)}"}), 500
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

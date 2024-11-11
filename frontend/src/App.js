@@ -6,7 +6,7 @@ import Register from './Register';
 import PasswordSetup from './PasswordSetup'; 
 import LocationSelection from './LocationSelection';
 import MyArtist from './MyArtist';
-import MyEventList from './EventList'; 
+import EventList from './EventList'; 
 
 
 function IntroPage() {
@@ -45,7 +45,7 @@ function App() {
       <Route path="/my-artist" element={<MyArtist />} />
 
       {/* Event List Page */}
-      <Route path="/event-list" element={<MyEventList />} />
+      <Route path="/event-list" element={<EventList />} />
     </Routes>
   );
 }
