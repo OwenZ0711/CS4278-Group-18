@@ -67,7 +67,8 @@ CORS(app, resources={r"/*": {"origins": "https://frontend2-mdvjuvsuy-sihan-yes-p
 # Configure the secret key and Flask-Session
 app.secret_key = "4278427842784278"  # Generates a random key
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the file system
-
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True 
 # Initialize the session
 Session(app)
 
