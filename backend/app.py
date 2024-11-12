@@ -484,4 +484,4 @@ def get_artist_details(artist_name):
         return jsonify({"message": f"Error fetching artist details: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="https://backendtest3-b4ff149de3c9.herokuapp.com", debug=True)
