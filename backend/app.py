@@ -5,7 +5,7 @@ import InfoKey as Key
 import bcrypt
 import urllib.parse
 import requests
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date, select
 import pandas as pd
 
 
@@ -253,37 +253,8 @@ def get_playlists():
     headers = {
         'Authorization': f"Bearer {session['access_token']}"
     }
-    '''
-    # Get user info
-    response = requests.get(Key.API_BASE_URL + "me", headers=headers)
-    user_info = response.json()
-    user_id = user_info['id']
-    print(user_id)
 
-    # Get user's playlists
-    response = requests.get(Key.API_BASE_URL + f"users/{user_id}/playlists", headers=headers)
-    user_playlist = response.json()
-    playlist_ids = [single_playlist['id'] for single_playlist in user_playlist['items']]
-    
-    # Gather artist information from playlists
-    artist_set = {
-        "name": [],
-        "id": [],
-    }
-    for id in playlist_ids:
-        response = requests.get(Key.API_BASE_URL + f"playlists/{id}/tracks", headers=headers)
-        playlist_items = response.json()['items']
-        for item in playlist_items:
-            item_track = item["track"]
-            artist_list = item_track["artists"]
-            for artist_info in artist_list:
-                if artist_info['id'] not in artist_set['id']:
-                    artist_set['name'].append(artist_info['name'])
-                    artist_set['id'].append(artist_info['id'])
-    artists = artist_set['name']
-    '''
-    
-    # Get user liked songs
+    # Get user's liked songs
     response = requests.get(Key.API_BASE_URL + "me/tracks", headers=headers)
     liked_songs_album = response.json()
     liked_songs = liked_songs_album['items']
@@ -309,31 +280,47 @@ def get_playlists():
             event_details = extract_event_details(events_data, artist)
             all_events.extend(event_details)
 
-    # Insert events data into the 'events' table
+    # Insert data into the database, checking for duplicates
     email = session.get('email')
     print(f'playlist email {email}')
     try:
-        print("artist name error testing")
         with engine.begin() as connection:
-            # Insert into userArtist table
+            # Insert into userArtist table with duplicate check
             for artist in artists:
-                print(artist)
-                print(f"Inserting artist {artist} for email {email} into userArtist table...")
-                insert_stmt = insert(user_artist_table).values(email=email, artist=artist)
-                connection.execute(insert_stmt)
+                print(f"Checking if artist {artist} for email {email} exists in userArtist table...")
+                check_artist_stmt = text("SELECT 1 FROM userArtist WHERE email = :email AND artist = :artist")
+                exists = connection.execute(check_artist_stmt, {"email": email, "artist": artist}).fetchone()
+                
+                if not exists:
+                    print(f"Inserting artist {artist} for email {email} into userArtist table...")
+                    insert_stmt = insert(user_artist_table).values(email=email, artist=artist)
+                    connection.execute(insert_stmt)
+
             print("Data inserted successfully into userArtist table!")
 
-            
-
-            # Insert into events table
+            # Insert into events table with duplicate check
             for event in all_events:
-                insert_stmt = insert(events_table).values(
-                    artist=event['Artist Name'],
-                    eventname=event['Event Name'],
-                    location=event['Location'],
-                    date=event['Event Date']
+                print(f"Checking if event {event['Event Name']} exists in events table...")
+                check_event_stmt = text(
+                    "SELECT 1 FROM events WHERE artist = :artist AND eventname = :eventname AND location = :location AND date = :date"
                 )
-                connection.execute(insert_stmt)
+                exists = connection.execute(check_event_stmt, {
+                    "artist": event['Artist Name'],
+                    "eventname": event['Event Name'],
+                    "location": event['Location'],
+                    "date": event['Event Date']
+                }).fetchone()
+                
+                if not exists:
+                    print(f"Inserting event {event['Event Name']} into events table...")
+                    insert_stmt = insert(events_table).values(
+                        artist=event['Artist Name'],
+                        eventname=event['Event Name'],
+                        location=event['Location'],
+                        date=event['Event Date']
+                    )
+                    connection.execute(insert_stmt)
+
             print("Events data inserted successfully into events table!")
 
     except Exception as e:
@@ -363,17 +350,72 @@ def get_artist_list():
 
 @app.route('/event-list', methods=['GET'])
 def get_event_list():
+    # Get the user's email from the session
+    email = session.get('email')
+    if not email:
+        return jsonify({"message": "User not logged in"}), 401
+
     try:
         with engine.connect() as connection:
-            select_stmt = text("SELECT * FROM events")
-            result = connection.execute(select_stmt).fetchall()
-            events = [{"Artist Name": row['Artist Name'],
-                       "Event Name": row['Event Name'],
-                       "Location": row['Location'],
-                       "Event Date": row['Event Date']} for row in result]
+            # Step 1: Get the list of artists associated with the user's email
+            artist_select_stmt = text("SELECT artist FROM userArtist WHERE email = :email")
+            artist_result = connection.execute(artist_select_stmt, {"email": email}).fetchall()
+            user_artists = [row[0] for row in artist_result]
+
+            if not user_artists:
+                return jsonify({"message": "No artists found for this user"}), 404
+
+            # Dynamically generate placeholders for the artist list
+            placeholders = ", ".join([f":artist_{i}" for i in range(len(user_artists))])
+            event_select_stmt = text(f"SELECT artist, eventname, location, date FROM events WHERE artist IN ({placeholders})")
+
+            # Create the dictionary for binding parameters dynamically
+            artist_params = {f"artist_{i}": artist for i, artist in enumerate(user_artists)}
+
+            # Execute the query with the dynamically created artist parameters
+            event_result = connection.execute(event_select_stmt, artist_params).fetchall()
+
+            # Step 3: Format the events list to return as JSON
+            events = [{
+                "Artist Name": row[0],  # artist
+                "Event Name": row[1],   # eventname
+                "Location": row[2],     # location
+                "Event Date": row[3]    # date
+            } for row in event_result]
+
+            if not events:
+                return jsonify({"message": "No events found for the user's artists"}), 404
+
             return jsonify(events), 200
     except Exception as e:
+        print(f"Error fetching events: {str(e)}")
         return jsonify({"message": f"Error fetching events: {str(e)}"}), 500
+    
+# Endpoint to get user profile data
+@app.route('/profile', methods=['GET'])
+def get_profile():
+    email = session.get('email')
+
+    if not email:
+        return jsonify({"message": "No email found in session."}), 400
+
+    try:
+        # Query to get user data from the users table
+        with engine.connect() as connection:
+            stmt = select(users_table).where(users_table.c.email == email)
+            user = connection.execute(stmt).fetchone()
+
+        if user:
+            profile_data = {
+                "email": user['email'],
+                "location": user['userlocation']
+            }
+            return jsonify(profile_data), 200
+        else:
+            return jsonify({"message": "User not found."}), 404
+
+    except Exception as e:
+        return jsonify({"message": f"Error fetching profile data: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

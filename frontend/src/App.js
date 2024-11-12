@@ -7,6 +7,8 @@ import PasswordSetup from './PasswordSetup';
 import LocationSelection from './LocationSelection';
 import MyArtist from './MyArtist';
 import EventList from './EventList'; 
+import MyProfile from './MyProfile';
+import ChangePassword from './ChangePassword';
 
 
 function IntroPage() {
@@ -28,24 +30,22 @@ function App() {
     <Routes>
       {/* Intro Page */}
       <Route path="/" element={<IntroPage />} />
-      
+
       {/* Login Page */}
       <Route path="/login" element={<Login />} />
-      
-      {/* Register Page */}
-      <Route path="/register" element={<Register />} />
-      
-      {/* Password Setup Page */}
-      <Route path="/password-setup" element={<PasswordSetup />} />
 
-      {/* Location Selection page */}
+      {/* Register Pages */}
+      <Route path="/register" element={<Register />} />
+      <Route path="/password-setup" element={<PasswordSetup />} />
       <Route path="/location-selection" element={<LocationSelection />} />
 
-      {/* My Artist Page */}
+      {/* Main App Pages */}
       <Route path="/my-artist" element={<MyArtist />} />
-
-      {/* Event List Page */}
       <Route path="/event-list" element={<EventList />} />
+      <Route path="/my-profile" element={<MyProfile />} />
+
+      {/* Change Password Page */}
+      <Route path="/change-password" element={<ChangePassword />} />
     </Routes>
   );
 }

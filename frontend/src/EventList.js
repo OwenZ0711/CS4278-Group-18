@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import './EventList.css';
 
 function EventList() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredEvents, setFilteredEvents] = useState([]);
 
   // Fetch events from the backend on component mount
   useEffect(() => {
@@ -24,6 +26,7 @@ function EventList() {
 
         const data = await response.json();
         setEvents(data);
+        setFilteredEvents(data);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -33,6 +36,14 @@ function EventList() {
 
     fetchEvents();
   }, []);
+
+  // Filter events based on search term
+  useEffect(() => {
+    const filtered = events.filter(event =>
+      event["Artist Name"].toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredEvents(filtered);
+  }, [searchTerm, events]);
 
   return (
     <div className="event-list-page">
@@ -48,16 +59,30 @@ function EventList() {
       {/* Main Content */}
       <div className="event-list-container">
         <h1>My Event List</h1>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search Artist"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            id="search-artist"
+            name="search-artist"
+          />
+          <button onClick={() => setSearchTerm('')}>✖</button>
+        </div>
         {loading && <p>Loading events...</p>}
-        {error && <p className="error">{error}</p>}
+        {error && <p className="error-message">{error}</p>}
         <div className="event-list">
-          {events.length > 0 ? (
-            events.map((event, index) => (
+          {filteredEvents.length > 0 ? (
+            filteredEvents.map((event, index) => (
               <div key={index} className="event-item">
-                <h2>{event["Event Name"]}</h2>
-                <p>Artist: {event["Artist Name"]}</p>
-                <p>Location: {event.Location}</p>
-                <p>Date: {event["Event Date"]}</p>
+                <img src={'https://picsum.photos/60?random=' + (index + 11)} alt={event["Artist Name"] || 'Unknown Artist'} className="event-photo" />
+                <div className="event-info">
+                  <h2>{event["Event Name"]}</h2>
+                  <p>Artist: {event["Artist Name"]}</p>
+                  <p>Location: {event.Location}</p>
+                  <p>Date: {event["Event Date"] ? new Date(event["Event Date"]).toLocaleDateString() : 'N/A'}</p>
+                </div>
               </div>
             ))
           ) : (

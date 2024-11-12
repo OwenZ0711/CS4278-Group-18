@@ -1,0 +1,88 @@
+/* General Layout */
+.my-profile-page {
+    display: flex;
+    height: 100vh; /* Full height of the viewport */
+    margin: 0;
+  }
+  
+  /* Sidebar Styling */
+  .sidebar {
+    width: 200px;
+    background-color: #f0f0f0;
+    height: 100vh; /* Full height of the viewport */
+    padding: 20px;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto; /* Add scroll if the content overflows */
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar li {
+    margin-bottom: 20px;
+  }
+  
+  .sidebar a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1.1em;
+    transition: color 0.3s;
+  }
+  
+  .sidebar a:hover {
+    color: #6a5acd; /* Preferred hover color */
+  }
+  
+  /* Main Content Styling */
+  .profile-container {
+    margin-left: 0px; /* Shift main content to the right of the sidebar */
+    padding: 20px;
+    flex-grow: 1;
+    box-sizing: border-box;
+    background-color: #ffffff;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #333;
+  }
+  
+  /* Profile Card Styling */
+  .profile-card {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .profile-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-right: 20px;
+    object-fit: cover;
+  }
+  
+  .profile-info p {
+    margin: 5px 0;
+    font-size: 1.1em;
+    color: #555;
+  }
+  
+  .profile-info a {
+    color: #6a5acd;
+    text-decoration: none;
+  }
+  
+  .profile-info a:hover {
+    text-decoration: underline;
+  }
