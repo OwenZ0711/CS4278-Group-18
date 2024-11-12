@@ -155,7 +155,6 @@ def password_setup():
 def location_selection():
     data = request.get_json()
     location = (data.get('country'), data.get('state'))
-    print(session['password'])
     if location[0] == None or location[1] == None:
         session['location'] = None
         return jsonify({"message": "Location is required"}), 400
@@ -169,9 +168,7 @@ def complete_registration():
     email = session.get("email")
     password = session.get('password')
     location = session.get('location')
-    print("email", email)
-    print("password", password)
-    print('location', location)
+    logging.info(f"email: {email}; password: {password}; location: {location}")
 
     if not all([email, password, location]):
         return jsonify({"message": "Incomplete registration data"}), 400
