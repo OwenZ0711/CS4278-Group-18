@@ -31,7 +31,9 @@ jobs:
     # Run frontend tests
     - name: Run frontend tests
       working-directory: ./frontend
-      run: npm test
+      run: npm test -- --coverage --watchAll=false
+      env:
+        CI: true
 
     # Build frontend
     - name: Build frontend
@@ -50,6 +52,13 @@ jobs:
         echo "RDS_HOSTNAME=${{ secrets.RDS_HOSTNAME }}" >> $GITHUB_ENV
         echo "RDS_USERNAME=${{ secrets.RDS_USERNAME }}" >> $GITHUB_ENV
         echo "RDS_PASSWORD=${{ secrets.RDS_PASSWORD }}" >> $GITHUB_ENV
+
+    # # Set additional environment variables (Flask, Spotify, etc.)
+    # - name: Set additional environment variables
+    #   run: |
+    #     echo "FLASK_SECRET_KEY=${{ secrets.FLASK_SECRET_KEY }}" >> $GITHUB_ENV
+    #     echo "SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}" >> $GITHUB_ENV
+    #     echo "SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}" >> $GITHUB_ENV
   
     # Install Python dependencies
     - name: Install dependencies for backend
@@ -62,3 +71,11 @@ jobs:
     - name: Run backend tests
       working-directory: ./backend
       run: pytest
+
+    # Upload coverage results for backend
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        files: ./backend/coverage.xml
+        flags: unittests
+        name: codecov-umbrella
