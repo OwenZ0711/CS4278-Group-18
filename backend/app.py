@@ -416,6 +416,49 @@ def get_profile():
 
     except Exception as e:
         return jsonify({"message": f"Error fetching profile data: {str(e)}"}), 500
+    
+# Endpoint to change password
+@app.route('/change-password', methods=['POST'])
+def change_password():
+    email = session.get('email')
+    if not email:
+        return jsonify({"message": "No email found in session."}), 400
+
+    data = request.get_json()
+    current_password = data.get('currentPassword')
+    new_password = data.get('newPassword')
+
+    if not current_password or not new_password:
+        return jsonify({"message": "Current and new passwords are required."}), 400
+
+    try:
+        # Query to get the current password hash from the database
+        with engine.connect() as connection:
+            stmt = select(users_table).where(users_table.c.email == email)
+            user = connection.execute(stmt).fetchone()
+
+        if not user:
+            return jsonify({"message": "User not found."}), 404
+
+        # Verify the current password
+        stored_hashed_password = user['password']
+        if not bcrypt.checkpw(current_password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
+            return jsonify({"message": "Current password is incorrect."}), 401
+
+        # Hash the new password and update it in the database
+        new_hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        with engine.connect() as connection:
+            update_stmt = (
+                users_table.update()
+                .where(users_table.c.email == email)
+                .values(password=new_hashed_password)
+            )
+            connection.execute(update_stmt)
+
+        return jsonify({"message": "Password changed successfully."}), 200
+    
+    except Exception as e:
+        return jsonify({"message": f"Error changing password: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

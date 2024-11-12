@@ -1,82 +1,106 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ChangePassword.css';
 
 function ChangePassword() {
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: '',
+    confirmNewPassword: ''
   });
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setPasswordData({ ...passwordData, [name]: value });
+    setPasswordData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('New password and confirm password do not match.');
+
+    // Ensure passwords match
+    if (passwordData.newPassword !== passwordData.confirmNewPassword) {
+      setError('New passwords do not match');
       return;
     }
-    console.log('Password change submitted:', passwordData);
-    // Logic to handle password change (e.g., API call)
+
+    // Make a request to change the password
+    try {
+      const response = await fetch('http://localhost:5000/change-password', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setSuccessMessage(data.message);
+      setError('');
+      // Redirect to profile page after successful password change
+      setTimeout(() => {
+        navigate('/my-profile');
+      }, 2000);
+    } catch (err) {
+      setError(err.message);
+      setSuccessMessage('');
+    }
   };
 
   return (
     <div className="change-password-page">
-      {/* Sidebar Navigation */}
-      <nav className="sidebar">
-        <ul>
-          <li><a href="/event-list">My Event List</a></li>
-          <li><a href="/my-artist">My Artist</a></li>
-          <li><a href="/my-profile">My Profile</a></li>
-        </ul>
-      </nav>
-
-      {/* Main Content */}
-      <div className="change-password-container">
-        <h1>Change Password</h1>
-        <form className="change-password-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="currentPassword">Current Password</label>
-            <input
-              type="password"
-              id="currentPassword"
-              name="currentPassword"
-              value={passwordData.currentPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="newPassword">New Password</label>
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              value={passwordData.newPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm New Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={passwordData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <button type="submit" className="submit-button">Submit</button>
-        </form>
-      </div>
+      <h1>Change Password</h1>
+      <form onSubmit={handleSubmit} className="change-password-form">
+        {error && <p className="error-message">{error}</p>}
+        {successMessage && <p className="success-message">{successMessage}</p>}
+        <div className="form-group">
+          <label htmlFor="currentPassword">Current Password</label>
+          <input
+            type="password"
+            id="currentPassword"
+            name="currentPassword"
+            value={passwordData.currentPassword}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="newPassword">New Password</label>
+          <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            value={passwordData.newPassword}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="confirmNewPassword">Confirm New Password</label>
+          <input
+            type="password"
+            id="confirmNewPassword"
+            name="confirmNewPassword"
+            value={passwordData.confirmNewPassword}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <button type="submit" className="action-button">Change Password</button>
+      </form>
     </div>
   );
 }
