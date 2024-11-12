@@ -3,12 +3,13 @@ from flask_cors import CORS
 from flask_session import Session
 import InfoKey as Key
 import bcrypt
+import logging
 import urllib.parse
 import requests
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date, select
 import pandas as pd
 
-
+logging.basicConfig(level=logging.INFO)
 tm_API_KEY = 'NDuQyZHdaWVNgxW9ss0aS896Fu84VUmo'
 tm_BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
 
@@ -100,7 +101,9 @@ metadata.create_all(engine)
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+    logging.info(f"data got: {data}")
     email = data.get('email')
+    logging.info(f"email got: {email}")
 
     if not email:
         return jsonify({"message": "Email is required"}), 400
