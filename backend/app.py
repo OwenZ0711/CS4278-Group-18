@@ -241,6 +241,7 @@ def callback():
     }
     response = requests.post(Key.TOKEN_URL, data=req_body)
     token_info = response.json()
+    logging.info(f"<---------token_info--------->: {token_info}")
     session['access_token'] = token_info['access_token']
     # if session.get("calling_type", None) == "register":
     #     with engine.connect() as connection:
