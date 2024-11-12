@@ -60,7 +60,7 @@ db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6s
 
 # Initialize Flask and enable CORS
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://frontend2-93vc55dno-sihan-yes-projects.vercel.app"}},
+CORS(app, resources={r"/*": {"origins": "https://frontend2-sihanye-sihan-yes-projects.vercel.app"}},
      supports_credentials=True,
      methods=["GET", "POST", "OPTIONS"],  # Allowed methods
      allow_headers=["Content-Type", "Authorization"])  # Allowed headers
