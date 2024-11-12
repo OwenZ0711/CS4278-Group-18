@@ -100,8 +100,15 @@ events_table = Table('events', metadata,
 metadata.create_all(engine)
 
 # Endpoint for email registration step
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['POST','OPTIONS'])
 def register():
+    if request.method == 'OPTIONS':
+        # Handle the preflight request
+        response = jsonify({"message": "Preflight request"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+        return response, 200
     logging.info("register starts")
     data = request.get_json()
     logging.info(f"data got: {data}")
