@@ -27,7 +27,7 @@ function LocationSelection() {
         alert('Location saved successfully!');
   
         // the complete registration endpoint
-        const completeResponse = await fetch('http://localhost:5000/complete-registration', {
+        const completeResponse = await fetch('https://backendtest3-b4ff149de3c9.herokuapp.com/complete-registration', {
           method: 'POST',
           credentials: "include",
           headers: {
