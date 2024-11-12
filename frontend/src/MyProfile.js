@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './MyProfile.css';
 
 function MyProfile() {
@@ -10,6 +10,7 @@ function MyProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -58,9 +59,15 @@ function MyProfile() {
       {/* Sidebar Navigation */}
       <nav className="sidebar">
         <ul>
-          <li><a href="/event-list">My Event List</a></li>
-          <li><a href="/my-artist">My Artist</a></li>
-          <li><a href="/my-profile">My Profile</a></li>
+          <li className={location.pathname === '/my-artist' ? 'active' : ''}>
+            <a href="/my-artist">My Artist</a>
+          </li>
+          <li className={location.pathname === '/event-list' ? 'active' : ''}>
+            <a href="/event-list">My Event List</a>
+          </li>
+          <li className={location.pathname === '/my-profile' ? 'active' : ''}>
+            <a href="/my-profile">My Profile</a>
+          </li>
         </ul>
       </nav>
 

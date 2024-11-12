@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './MyArtist.css';
 
 function MyArtist() {
   const [searchTerm, setSearchTerm] = useState('');
   const [artists, setArtists] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Fetch the list of artists from the backend endpoint
@@ -41,15 +44,23 @@ function MyArtist() {
       {/* Sidebar Navigation */}
       <nav className="sidebar">
         <ul>
-          <li><a href="/event-list">My Event List</a></li>
-          <li><a href="/my-artist">My Artist</a></li>
-          <li><a href="/my-profile">My Profile</a></li>
+          <li className={location.pathname === '/my-artist' ? 'active' : ''}>
+            <a href="/my-artist">My Artist</a>
+          </li>
+          <li className={location.pathname === '/event-list' ? 'active' : ''}>
+            <a href="/event-list">My Event List</a>
+          </li>
+          <li className={location.pathname === '/my-profile' ? 'active' : ''}>
+            <a href="/my-profile">My Profile</a>
+          </li>
         </ul>
       </nav>
 
       {/* Main Content */}
       <div className="my-artist-container">
         <h1>My Artist</h1>
+        {loading && <p>Loading artists...</p>}
+        {error && <p className="error-message">{error}</p>}
         <div className="search-bar">
           <input
             type="text"
@@ -59,10 +70,6 @@ function MyArtist() {
           />
           <button onClick={() => setSearchTerm('')}>✖</button>
         </div>
-
-        {/* Loading and Error Handling */}
-        {loading && <p>Loading artists...</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
 
         {/* Artist List with Scrollbar */}
         <div className="artist-list">

@@ -96,9 +96,6 @@ events_table = Table('events', metadata,
                     )
 metadata.create_all(engine)
 
-# Create table if it doesn't exist
-
-
 # Endpoint for email registration step
 @app.route('/register', methods=['POST'])
 def register():

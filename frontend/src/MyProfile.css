@@ -27,6 +27,11 @@
   .sidebar li {
     margin-bottom: 20px;
   }
+
+  .sidebar ul li.active a {
+    font-weight: bold;
+    color: #6a5acd;
+  }
   
   .sidebar a {
     text-decoration: none;
