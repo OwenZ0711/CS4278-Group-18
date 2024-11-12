@@ -14,7 +14,7 @@ function LocationSelection() {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/location-selection', {
+      const response = await fetch('https://backendtest3-b4ff149de3c9.herokuapp.com/location-selection', {
         method: 'POST',
         credentials: "include",
         headers: {

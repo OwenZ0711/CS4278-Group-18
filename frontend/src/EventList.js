@@ -15,7 +15,7 @@ function EventList() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:5000/event-list', {
+        const response = await fetch('https://backendtest3-b4ff149de3c9.herokuapp.com/event-list', {
           method: 'GET',
           credentials: 'include',
           headers: {

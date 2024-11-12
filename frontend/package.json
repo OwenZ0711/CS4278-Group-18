@@ -15,7 +15,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --coverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -35,5 +35,21 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "jest": { 
+    "collectCoverage": true, 
+    "coverageThreshold": { 
+      "global": { 
+        "branches": 75, 
+        "functions": 85, 
+        "lines": 85, 
+        "statements": 85 
+        } 
+        }, 
+        "coverageReporters": ["text", "lcov"], 
+        "testEnvironment": "jsdom" 
+      },
+  "devDependencies": {
+    "jest": "^27.5.1"
   }
 }
