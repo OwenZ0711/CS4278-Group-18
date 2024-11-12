@@ -4,10 +4,8 @@ from flask_session import Session
 from backend import InfoKey as Key
 import bcrypt
 import logging
-import urllib.parse
 import requests
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date, select
-import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
 tm_API_KEY = 'NDuQyZHdaWVNgxW9ss0aS896Fu84VUmo'
