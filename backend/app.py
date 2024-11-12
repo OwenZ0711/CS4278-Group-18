@@ -1,4 +1,5 @@
 import logging
+logging.basicConfig(level=logging.INFO)
 logging.info("start backend log *******************************")
 from flask import Flask, request, jsonify, redirect, session
 from flask_cors import CORS
@@ -8,7 +9,6 @@ import bcrypt
 import requests
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date, select
 
-logging.basicConfig(level=logging.INFO)
 tm_API_KEY = 'NDuQyZHdaWVNgxW9ss0aS896Fu84VUmo'
 tm_BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
 
