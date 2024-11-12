@@ -61,7 +61,7 @@ db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6s
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://frontend2-9wu1azir3-sihan-yes-projects.vercel.app"}},
      supports_credentials=True,
-     methods=["GET", "POST"],  # Allowed methods
+     methods=["GET", "POST", "OPTIONS"],  # Allowed methods
      allow_headers=["Content-Type", "Authorization"])  # Allowed headers
 # Configure the secret key and Flask-Session
 app.secret_key = "4278427842784278"  # Generates a random key
