@@ -256,6 +256,7 @@ def callback():
     print("redirect to playlist")
     return redirect('/playlists')
     #return jsonify({"message": "authentication finished with process:"}, session['calling_type']), 200
+  return jsonify({"message": "Authorization code not provided"}), 400
 
 @app.route('/playlists')
 def get_playlists():
