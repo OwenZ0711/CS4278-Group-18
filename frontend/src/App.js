@@ -47,8 +47,8 @@ function App() {
       {/* Change Password Page */}
       <Route path="/change-password" element={<ChangePassword />} />
 
-      {/* Certain Artist Detail Page*/}
-      <Route path="/artist-details/:artistName" element={<ArtistDetails />} />
+      {/* Certain Artist Detail Page
+      <Route path="/artist-details/:artistName" element={<ArtistDetails />} /> */}
     </Routes>
   );
 }

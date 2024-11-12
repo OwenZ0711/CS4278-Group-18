@@ -14,7 +14,7 @@ function MyArtist() {
     // Fetch the list of artists from the backend endpoint
     const fetchArtists = async () => {
       try {
-        const response = await fetch('http://localhost:5000/artist-list', {
+        const response = await fetch('https://backendtest3-b4ff149de3c9.herokuapp.com/artist-list', {
           method: 'GET',
           credentials: "include",
           headers: { 'Content-Type': 'application/json' }

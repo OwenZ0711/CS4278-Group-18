@@ -60,7 +60,7 @@ db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6s
 
 # Initialize Flask and enable CORS
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "https://frontend2-sihanye-sihan-yes-projects.vercel.app"}}, supports_credentials=True)
 # Configure the secret key and Flask-Session
 app.secret_key = "4278427842784278"  # Generates a random key
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the file system
@@ -324,7 +324,7 @@ def get_playlists():
         print(f"Error occurred while inserting into database tables: {str(e)}")
         return jsonify({"message": f"Error inserting into database tables: {str(e)}"}), 500
 
-    return redirect("http://localhost:3000/my-artist", code=302)
+    return redirect("https://frontend2-sihanye-sihan-yes-projects.vercel.app/my-artist", code=302)
 
 @app.route('/artist-list', methods = ['GET'])
 def get_artist_list():
@@ -480,4 +480,4 @@ def get_artist_details(artist_name):
         return jsonify({"message": f"Error fetching artist details: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)

@@ -12,7 +12,7 @@ function Register() {
 
     // Send registration data to backend
     try {
-      const response = await fetch('http://localhost:5000/register', {
+      const response = await fetch('https://backendtest3-b4ff149de3c9.herokuapp.com/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: "include",
