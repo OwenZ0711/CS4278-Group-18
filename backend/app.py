@@ -1,9 +1,10 @@
+import logging
+logging.info("start backend log *******************************")
 from flask import Flask, request, jsonify, redirect, session
 from flask_cors import CORS
 from flask_session import Session
 from backend import InfoKey as Key
 import bcrypt
-import logging
 import requests
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date, select
 
