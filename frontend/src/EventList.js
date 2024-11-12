@@ -48,9 +48,8 @@ function EventList() {
     setFilteredEvents(filtered);
   }, [searchTerm, events]);
 
-  const handleViewArtist = (artistName) => {
-    // Navigate to the artist page
-    navigate(`/my-artist?artist=${encodeURIComponent(artistName)}`);
+  const handleArtistClick = (artistName) => {
+    navigate(`/artist-details/${artistName}`);
   };
 
   return (
@@ -97,7 +96,7 @@ function EventList() {
                 />
                 <div className="event-info">
                   <h2>{event["Event Name"]}</h2>
-                  <p>Artist: <span className="clickable-artist" onClick={() => handleViewArtist(event["Artist Name"])}>{event["Artist Name"]}</span></p>
+                  <p onClick={() => handleArtistClick(event["Artist Name"])}>Artist: {event["Artist Name"]}</p>
                   <p>Location: {event.Location}</p>
                   <p>Date: {event["Event Date"] ? new Date(event["Event Date"]).toLocaleDateString() : 'N/A'}</p>
                 </div>

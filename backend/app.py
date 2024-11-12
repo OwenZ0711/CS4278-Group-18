@@ -457,5 +457,27 @@ def change_password():
     except Exception as e:
         return jsonify({"message": f"Error changing password: {str(e)}"}), 500
 
+# Endpoint to get artist details
+@app.route('/artist-details/<artist_name>', methods=['GET'])
+def get_artist_details(artist_name):
+    try:
+        with engine.connect() as connection:
+            query = text("SELECT * FROM artists WHERE name = :artist_name")
+            result = connection.execute(query, artist_name=artist_name).fetchone()
+            
+            if not result:
+                return jsonify({"message": "Artist not found"}), 404
+            
+            artist = {
+                "name": result['name'],
+                "description": result.get('description', 'No description available'),
+                "image": result.get('image', 'https://via.placeholder.com/150')
+            }
+
+        return jsonify(artist), 200
+
+    except Exception as e:
+        return jsonify({"message": f"Error fetching artist details: {str(e)}"}), 500
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
