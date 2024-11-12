@@ -60,7 +60,7 @@ db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6s
 
 # Initialize Flask and enable CORS
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://frontend2-9wu1azir3-sihan-yes-projects.vercel.app"}},
+CORS(app, resources={r"/*": {"origins": "https://frontend2-93vc55dno-sihan-yes-projects.vercel.app"}},
      supports_credentials=True,
      methods=["GET", "POST", "OPTIONS"],  # Allowed methods
      allow_headers=["Content-Type", "Authorization"])  # Allowed headers
@@ -100,15 +100,15 @@ events_table = Table('events', metadata,
 metadata.create_all(engine)
 
 # Endpoint for email registration step
-@app.route('/register', methods=['POST','OPTIONS'])
+@app.route('/register', methods=['POST'])
 def register():
-    if request.method == 'OPTIONS':
-        # Handle the preflight request
-        response = jsonify({"message": "Preflight request"})
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type")
-        return response, 200
+    # if request.method == 'OPTIONS':
+    #     # Handle the preflight request
+    #     response = jsonify({"message": "Preflight request"})
+    #     response.headers.add("Access-Control-Allow-Origin", "*")
+    #     response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+    #     response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+    #     return response, 200
     logging.info("register starts")
     data = request.get_json()
     logging.info(f"data got: {data}")
