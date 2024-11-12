@@ -102,6 +102,7 @@ metadata.create_all(engine)
 # Endpoint for email registration step
 @app.route('/register', methods=['POST'])
 def register():
+    logging.info("register starts")
     data = request.get_json()
     logging.info(f"data got: {data}")
     email = data.get('email')
