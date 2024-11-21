@@ -33,7 +33,7 @@ def extract_event_details(events_data, artist_name):
         for event in events_data['_embedded']['events']:
             event_name = event.get('name', 'N/A')
             event_time_full = event.get('dates', {}).get('start', {}).get('dateTime', 'N/A')
-            event_time = event_time_full.split("T")[0] if event_time_full != 'N/A' else 'N/A'
+            event_time = event_time_full.split("T")[0] if event_time_full != 'N/A' else None
             venue = event.get('_embedded', {}).get('venues', [{}])[0]
 
             event_address = venue.get('address', {}).get('line1', 'N/A')
@@ -335,13 +335,15 @@ def get_playlists():
             for event in all_events:
                 print(f"Checking if event {event['Event Name']} exists in events table...")
                 check_event_stmt = text(
+                    "SELECT 1 FROM events WHERE artist = :artist AND eventname = :eventname AND location = :location AND date IS NULL"
+                    if event['Event Date'] is None else
                     "SELECT 1 FROM events WHERE artist = :artist AND eventname = :eventname AND location = :location AND date = :date"
                 )
                 exists = connection.execute(check_event_stmt, {
                     "artist": event['Artist Name'],
                     "eventname": event['Event Name'],
                     "location": event['Location'],
-                    "date": event['Event Date']
+                    "date": event['Event Date'] if event['Event Date'] is not None else None
                 }).fetchone()
                 
                 if not exists:
