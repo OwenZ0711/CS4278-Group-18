@@ -13,3 +13,7 @@ Back end: Python, MySQL
 - Use Google API to access hotels and restaurants around located events.
 - Search for specific artists' events and recommend them based on the above functionality.
 - Notification of new events or event changes. 
+
+**Deployment process**
+Front end: Vercel
+Backend: Heroku
