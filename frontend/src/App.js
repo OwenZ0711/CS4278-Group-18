@@ -9,6 +9,7 @@ import MyArtist from './MyArtist';
 import EventList from './EventList'; 
 import MyProfile from './MyProfile';
 import ChangePassword from './ChangePassword';
+import ArtistDetails from './ArtistDetails';
 
 
 function IntroPage() {

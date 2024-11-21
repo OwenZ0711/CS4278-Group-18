@@ -3,10 +3,8 @@ from flask_cors import CORS
 from flask_session import Session
 import InfoKey as Key
 import bcrypt
-import urllib.parse
 import requests
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date, select
-import pandas as pd
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date, select, update
 
 
 tm_API_KEY = 'NDuQyZHdaWVNgxW9ss0aS896Fu84VUmo'
@@ -86,6 +84,13 @@ user_artist_table = Table('userArtist', metadata,
                           )
 
 # Create the userArtist table if it doesn't exist
+metadata.create_all(engine)
+
+# Define the artists table to store artist names and images
+artists_table = Table('artists', metadata,
+                      Column('artist', String(255), nullable=False, unique=True),
+                      Column('image', String(255), nullable=True)
+                     )
 metadata.create_all(engine)
 
 events_table = Table('events', metadata,
@@ -258,6 +263,7 @@ def get_playlists():
     artist_set = {
         "name": [],
         "id": [],
+        "image" : [],
     }
     for song in liked_songs:
         track = song['track']
@@ -266,7 +272,20 @@ def get_playlists():
             if artist_info['id'] not in artist_set['id']:
                 artist_set['name'].append(artist_info['name'])
                 artist_set['id'].append(artist_info['id'])
+
+                # Check if 'images' key exists
+                artist_image_url = None
+
+                if 'images' in artist_info and len(artist_info['images']) > 0:
+                    artist_image_url = artist_info['images'][0]['url']
+                else:
+                    # Use a placeholder image URL if none is available
+                    artist_image_url = 'https://via.placeholder.com/150'
+
+                artist_set['image'].append(artist_image_url)
+
     artists = artist_set['name']
+    artist_images = artist_set['image']
     all_events = []
 
     # Fetch events for each artist
@@ -275,6 +294,7 @@ def get_playlists():
         events_data = get_artist_events(artist)
         if events_data:
             event_details = extract_event_details(events_data, artist)
+
             all_events.extend(event_details)
 
     # Insert data into the database, checking for duplicates
@@ -282,6 +302,22 @@ def get_playlists():
     print(f'playlist email {email}')
     try:
         with engine.begin() as connection:
+            # Insert into artists table if not already exists
+            for i, artist in enumerate(artists):
+                artist_name = artist
+                artist_image = artist_images[i]
+
+                # Check if the artist already exists in the artists table
+                check_artist_stmt = text("SELECT 1 FROM artists WHERE artist = :artist")
+                exists = connection.execute(check_artist_stmt, {"artist": artist_name}).fetchone()
+
+                if not exists:
+                    print(f"Inserting artist {artist_name} into artists table...")
+                    insert_stmt = insert(artists_table).values(artist=artist_name, image=artist_image)
+                    connection.execute(insert_stmt)
+
+            print("Artists data inserted successfully into artists table!")
+
             # Insert into userArtist table with duplicate check
             for artist in artists:
                 print(f"Checking if artist {artist} for email {email} exists in userArtist table...")
@@ -400,20 +436,22 @@ def get_profile():
         # Query to get user data from the users table
         with engine.connect() as connection:
             stmt = select(users_table).where(users_table.c.email == email)
-            user = connection.execute(stmt).fetchone()
+            result = connection.execute(stmt).fetchone()
 
-        if user:
+        if result:
             profile_data = {
-                "email": user['email'],
-                "location": user['userlocation']
+                "email": result[0],
+                "location": result[2]
             }
             return jsonify(profile_data), 200
         else:
             return jsonify({"message": "User not found."}), 404
 
     except Exception as e:
+        print(f"Error fetching profile data: {str(e)}")  # Add detailed error logging
         return jsonify({"message": f"Error fetching profile data: {str(e)}"}), 500
     
+
 # Endpoint to change password
 @app.route('/change-password', methods=['POST'])
 def change_password():
@@ -437,46 +475,73 @@ def change_password():
         if not user:
             return jsonify({"message": "User not found."}), 404
 
+        # Access the 'password' column by name instead of index
+        stored_hashed_password = user[1]  # Use 'password' column name
+
         # Verify the current password
-        stored_hashed_password = user['password']
         if not bcrypt.checkpw(current_password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
             return jsonify({"message": "Current password is incorrect."}), 401
 
         # Hash the new password and update it in the database
         new_hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        with engine.connect() as connection:
+
+        # Update the password in the database
+        with engine.begin() as connection:
+            # Use the `update` statement with the correct password column
             update_stmt = (
-                users_table.update()
+                update(users_table)
                 .where(users_table.c.email == email)
                 .values(password=new_hashed_password)
             )
-            connection.execute(update_stmt)
+            result = connection.execute(update_stmt)
 
-        return jsonify({"message": "Password changed successfully."}), 200
-    
+        # Check if the update was successful
+        if result.rowcount > 0:
+            print("Password updated successfully.")
+            return jsonify({"message": "Password changed successfully."}), 200
+        else:
+            print("Password update failed.")
+            return jsonify({"message": "Password update failed."}), 500
+
     except Exception as e:
-        return jsonify({"message": f"Error changing password: {str(e)}"}), 500
+        print(f"Error occurred: {str(e)}")
+        return jsonify({"message": f"Error occurred while changing password: {str(e)}"}), 500
 
 # Endpoint to get artist details
 @app.route('/artist-details/<artist_name>', methods=['GET'])
 def get_artist_details(artist_name):
     try:
+        # Query to get artist data from the artists table
         with engine.connect() as connection:
-            query = text("SELECT * FROM artists WHERE name = :artist_name")
-            result = connection.execute(query, artist_name=artist_name).fetchone()
-            
-            if not result:
-                return jsonify({"message": "Artist not found"}), 404
-            
-            artist = {
-                "name": result['name'],
-                "description": result.get('description', 'No description available'),
-                "image": result.get('image', 'https://via.placeholder.com/150')
+            stmt = select(artists_table).where(artists_table.c.artist == artist_name)
+            result = connection.execute(stmt).fetchone()
+
+        if result:
+            # Access by column name if possible, otherwise by index
+            artist_data = {
+                "name": result[0],  # 'artist' column
+                "image": result[1]  # 'image' column
             }
 
-        return jsonify(artist), 200
+            # Query to get events for the artist
+            with engine.connect() as connection:
+                events_stmt = select(events_table).where(events_table.c.artist == artist_name)
+                events_result = connection.execute(events_stmt).fetchall()
+
+            events = [{
+                "Event Name": event[1],
+                "Location": event[2],
+                "Event Date": event[3].isoformat() if event[3] else 'N/A'
+            } for event in events_result]
+
+            artist_data["events"] = events
+
+            return jsonify(artist_data), 200
+        else:
+            return jsonify({"message": "Artist not found."}), 404
 
     except Exception as e:
+        print(f"Error fetching artist details: {str(e)}")
         return jsonify({"message": f"Error fetching artist details: {str(e)}"}), 500
 
 if __name__ == "__main__":
