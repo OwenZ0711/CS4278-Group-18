@@ -256,7 +256,7 @@ def callback():
     print("redirect to playlist")
     return redirect('/playlists')
     #return jsonify({"message": "authentication finished with process:"}, session['calling_type']), 200
-  return jsonify({"message": "Authorization code not provided"}), 400
+  return redirect("https://frontend2-covqbyf8a-sihan-yes-projects.vercel.app/my-artist", code=400)
 
 @app.route('/playlists')
 def get_playlists():
@@ -266,6 +266,8 @@ def get_playlists():
 
     # Get user's liked songs
     response = requests.get(Key.API_BASE_URL + "me/tracks", headers=headers)
+    if response.status_code != 200:
+            return jsonify({"message": "Failed to fetch liked songs", "status": "error"}), 500
     liked_songs_album = response.json()
     liked_songs = liked_songs_album['items']
     artist_set = {
@@ -337,7 +339,7 @@ def get_playlists():
         print(f"Error occurred while inserting into database tables: {str(e)}")
         return jsonify({"message": f"Error inserting into database tables: {str(e)}"}), 500
 
-    return redirect("https://frontend2-covqbyf8a-sihan-yes-projects.vercel.app/my-artist", code=302)
+    #return redirect("https://frontend2-covqbyf8a-sihan-yes-projects.vercel.app/my-artist", code=302)
 
 @app.route('/artist-list', methods = ['GET'])
 def get_artist_list():
