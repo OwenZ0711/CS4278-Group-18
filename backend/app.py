@@ -60,7 +60,7 @@ db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6s
 
 # Initialize Flask and enable CORS
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://frontend2-4t5ieaw62-sihan-yes-projects.vercel.app"}},
+CORS(app, resources={r"/*": {"origins": "https://frontend2-htf90iju6-sihan-yes-projects.vercel.app"}},
      supports_credentials=True,
      methods=["GET", "POST", "OPTIONS"],  # Allowed methods
      allow_headers=["Content-Type", "Authorization"])  # Allowed headers
@@ -338,8 +338,8 @@ def get_playlists():
     except Exception as e:
         print(f"Error occurred while inserting into database tables: {str(e)}")
         return jsonify({"message": f"Error inserting into database tables: {str(e)}"}), 500
-
-    return redirect("https://frontend2-4t5ieaw62-sihan-yes-projects.vercel.app/my-artist", code=302)
+    print(f"Problem with access token:{session["access_token"]}")
+    return redirect("https://frontend2-htf90iju6-sihan-yes-projects.vercel.app/my-artist", code=302)
 
 @app.route('/artist-list', methods = ['GET'])
 def get_artist_list():
