@@ -1,56 +1,191 @@
-/* General Layout */
+/* Overall page layout */
 .artist-details-page {
-    margin: 20px;
-    padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 15%;
+  min-width: 200px;
+  background-color: #f0f0f0;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin-bottom: 20px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1rem;
+  transition: color 0.3s;
+}
+
+.sidebar a:hover {
+  color: #6a5acd;
+}
+
+/* Artist header */
+.artist-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  background-color: white;
+  border-bottom: 1px solid #ddd;
+  position: fixed;
+  top: 0;
+  left: 15%;
+  right: 0;
+  z-index: 10;
+  height: 20%;
+  max-height: 200px;
+}
+
+.artist-photo {
+  width: 12%;
+  max-width: 150px;
+  height: auto;
+  border-radius: 50%;
+  margin-right: 20px;
+  object-fit: cover;
+}
+
+.artist-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Main content */
+.artist-details-container {
+  margin-top: 10%;
+  margin-left: 25%;
+  padding: 20px;
+  box-sizing: border-box;
+  height: calc(85vh - 20px);
+  overflow-y: auto;
+}
+
+.artist-events {
+  padding: 10px 0;
+}
+
+/* Event item layout */
+.event-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* Divide into three equal sections */
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.event-item div {
+  text-align: left;
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden; /* Hide overflowing content */
+  text-overflow: ellipsis; /* Add ellipsis for truncated content */
+}
+
+.event-item .event-name {
+  grid-column: 1 / 2; /* Start at the first third */
+}
+
+.event-item .event-location {
+  grid-column: 2 / 3; /* Start at the second third */
+}
+
+.event-item .event-date {
+  grid-column: 3 / 4; /* Start at the last third */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 10px;
   }
-  
+
   .artist-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 30px;
+    top: 0;
+    left: 0;
+    height: auto;
+    flex-wrap: wrap;
+    text-align: center;
   }
-  
+
   .artist-photo {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    margin-right: 20px;
-    object-fit: cover;
+    width: 20%;
+    max-width: 100px;
   }
-  
-  .artist-info h1 {
-    margin: 0;
-    font-size: 2em;
-    color: #333;
-  }
-  
-  .artist-info p {
+
+  .artist-name {
+    font-size: 1.2rem;
     margin-top: 10px;
-    font-size: 1.2em;
-    color: #555;
   }
-  
-  .artist-events h2 {
-    margin-bottom: 20px;
-    font-size: 1.8em;
-    color: #333;
+
+  .artist-details-container {
+    margin-top: 10%;
+    margin-left: 0;
+    height: calc(100vh - 20%);
+    padding: 10px;
   }
-  
+
   .event-item {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    background-color: #f9f9f9;
+    grid-template-columns: 1fr; /* Stack entries vertically */
+    gap: 5px;
   }
-  
-  .event-item h3 {
-    margin: 0 0 10px;
-    font-size: 1.4em;
+
+  .event-item div {
+    white-space: normal; /* Allow wrapping */
+    padding: 5px 0;
   }
-  
-  .event-item p {
-    margin: 5px 0;
-    font-size: 1em;
-    color: #555;
+}
+
+@media (max-width: 480px) {
+  .artist-header {
+    flex-direction: column;
+    padding: 10px;
   }
+
+  .artist-photo {
+    width: 30%;
+    max-width: 80px;
+  }
+
+  .artist-name {
+    font-size: 1rem;
+    margin-top: 5px;
+  }
+
+  .sidebar {
+    font-size: 0.9rem;
+  }
+}

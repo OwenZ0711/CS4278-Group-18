@@ -1,28 +1,30 @@
-/* General Layout */
+/* Overall page layout */
 .my-artist-page {
   display: flex;
-  height: 100vh; /* Full height of the viewport */
+  height: 100vh;
   margin: 0;
 }
 
-/* Sidebar Styling */
+/* Sidebar */
 .sidebar {
-  width: 200px;
+  width: 15%; /* Matches the EventList sidebar width */
+  min-width: 25px; /* Minimum width for very small screens */
+  max-width: 25vw; /* Maximum width to ensure it doesn't exceed 1/4 of the viewport width */
   background-color: #f0f0f0;
-  height: 100vh; /* Full height of the viewport */
-  padding: 20px;
+  height: 100vh;
+  padding: 10px;
   box-sizing: border-box;
   position: fixed;
   top: 0;
   left: 0;
-  overflow-y: auto; /* Add scroll if the content overflows */
+  overflow-y: auto;
+  z-index: 5; /* Ensure it stays above content */
 }
 
-/* Sidebar List Styling */
 .sidebar ul {
   list-style-type: none;
   padding: 0;
-  margin: 0; /* Remove default margin */
+  margin: 0;
 }
 
 .sidebar li {
@@ -31,7 +33,7 @@
 
 .sidebar ul li.active a {
   font-weight: bold;
-  color: #6a5acd; /* Adjust to your theme color */
+  color: #6a5acd;
 }
 
 .sidebar a {
@@ -42,35 +44,75 @@
 }
 
 .sidebar a:hover {
-  color: #6a5acd; /* Preferred hover color */
+  color: #6a5acd;
 }
 
-/* Main Content Styling */
+/* Main container */
 .my-artist-container {
-  margin-left: 0px; /* Shift main content to the right of the sidebar */
+  margin-left: 15%; /* Matches the sidebar width dynamically */
+  width: 85%; /* Takes up the remaining space */
   padding: 20px;
-  flex-grow: 1;
   box-sizing: border-box;
+  overflow-y: auto;
+  height: 100vh;
 }
 
-/* Artist List Styling */
+/* Header section */
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  position: sticky; /* Sticks to the top */
+  top: 0;
+  background-color: white;
+  z-index: 10;
+  padding: 10px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar input {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.search-bar button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+/* Artist list section */
 .artist-list {
-  max-height: 70vh; /* Limit the height of the artist list */
-  overflow-y: auto; /* Add a vertical scrollbar if the content exceeds the height */
-  padding-right: 10px; /* Add some padding to the right for better appearance */
+  max-height: calc(100vh - 80px); /* Adjust for the header height */
+  overflow-y: auto;
+  padding-right: 10px;
 }
 
 .artist-item {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping for smaller screens */
+  justify-content: space-between;
   margin-bottom: 15px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
-.artist-item img {
+.artist-photo {
   width: 60px;
   height: 60px;
   border-radius: 50%;
   margin-right: 15px;
+  object-fit: cover;
+}
+
+.artist-info {
+  flex-grow: 1;
+  min-width: 0; /* Ensures the content doesn't overflow */
 }
 
 .artist-info h2 {
@@ -78,7 +120,83 @@
   font-size: 1.2em;
 }
 
-.artist-info p {
-  margin: 0;
-  color: #555;
+.artist-info button {
+  margin-top: 5px;
+  padding: 5px 10px;
+  background-color: #6a5acd;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 15%; 
+    min-width: 50px;
+  }
+
+  .event-list-container {
+    margin-left: 10%; /* Adjust to match sidebar */
+    width: 90%;
+  }
+
+  .search-bar {
+    flex-direction: column; /* Stack input and button vertically */
+    align-items: flex-start;
+  }
+
+  .search-bar input {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .event-item {
+    flex-direction: column; /* Stack content vertically */
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 10%; 
+    min-width: 50px;
+  }
+
+  .event-list-container {
+    margin-left: 5%;
+    width: 95%;
+  }
+
+  .event-item {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 15%;
+    min-width: 30px;
+    padding: 5px;
+  }
+
+  .event-list-container {
+    margin-left: 0%;
+    width: 100%;
+    padding: 5px;
+  }
+
+  .event-item {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .event-info h3 {
+    font-size: 1em;
+  }
+
+  .event-info p {
+    font-size: 0.8em;
+  }
 }

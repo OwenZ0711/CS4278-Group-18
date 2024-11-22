@@ -79,10 +79,10 @@ function MyArtist() {
         <div className="artist-list">
           {filteredArtists.map((artist, index) => (
             <div key={index} className="artist-item" onClick={() => handleArtistClick(artist.name)}>
-              <img src={artist.image || 'https://via.placeholder.com/150'} alt={artist.name} />
+              <img src={artist.image || 'https://via.placeholder.com/150'} alt={artist.name} className="artist-photo"/>
               <div className="artist-info">
                 <h2>{artist.name}</h2>
-                <p>{artist.description || 'No description available'}</p>
+                {/* <p>{artist.description || 'No description available'}</p> */}
               </div>
             </div>
           ))}

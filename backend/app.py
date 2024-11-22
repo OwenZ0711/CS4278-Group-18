@@ -72,7 +72,7 @@ metadata = MetaData()
 
 # Define the users table schema
 users_table = Table('users', metadata,
-                    Column('email', String(255), nullable=False, unique=True),
+                    Column('email', String(255), nullable=False, unique=True),      
                     Column('password', String(255), nullable=False),
                     Column('userlocation', String(255))
                     )
@@ -273,15 +273,19 @@ def get_playlists():
                 artist_set['name'].append(artist_info['name'])
                 artist_set['id'].append(artist_info['id'])
 
-                # Check if 'images' key exists
-                artist_image_url = None
-
-                if 'images' in artist_info and len(artist_info['images']) > 0:
-                    artist_image_url = artist_info['images'][0]['url']
+                # Fetch the artist's full details using the Spotify API to get images
+                artist_details_response = requests.get(f"{Key.API_BASE_URL}artists/{artist_info['id']}", headers=headers)
+                if artist_details_response.status_code == 200:
+                    artist_details = artist_details_response.json()
+                    if 'images' in artist_details and len(artist_details['images']) > 0:
+                        artist_image_url = artist_details['images'][0]['url']
+                    else:
+                        # Use a placeholder image URL if none is available
+                        artist_image_url = 'https://via.placeholder.com/150'
                 else:
-                    # Use a placeholder image URL if none is available
+                    # Use a placeholder image if there was an issue fetching the artist details
                     artist_image_url = 'https://via.placeholder.com/150'
-
+                    
                 artist_set['image'].append(artist_image_url)
 
     artists = artist_set['name']
@@ -366,22 +370,32 @@ def get_playlists():
 
 @app.route('/artist-list', methods = ['GET'])
 def get_artist_list():
-    print("Session contents:", dict(session))
     email = session.get('email')  # Retrieve the session's email
     if not email:
         return jsonify({"message": "No email found in session."}), 400
 
     try:
         with engine.connect() as connection:
-            select_stmt = text("SELECT artist FROM userArtist WHERE email = :email")
-            result = connection.execute(select_stmt, {"email": email}).fetchall()
-            artists = [{"name": row[0]} for row in result]  # Adjusted to match the query result
+            # Join userArtist and artists tables to get the artist and corresponding image
+            select_stmt = text("""
+                SELECT userArtist.artist, artists.image 
+                FROM userArtist 
+                JOIN artists ON userArtist.artist = artists.artist
+                WHERE userArtist.email = :email
+            """)
+            results = connection.execute(select_stmt, {"email": email}).fetchall()
+
+            # Construct artist list with name and image
+            artist_list = [
+                {"name": row[0], "image": row[1] or 'https://via.placeholder.com/150'}
+                for row in results
+            ]
+
     except Exception as e:
         print("Error fetching artists:", str(e))
         return jsonify({"message": f"Error fetching artists: {str(e)}"}), 500
 
-    return jsonify(artists), 200
-'zzy20020711@gmail.com, 12345'
+    return jsonify(artist_list), 200
 
 @app.route('/event-list', methods=['GET'])
 def get_event_list():
@@ -393,30 +407,48 @@ def get_event_list():
     try:
         with engine.connect() as connection:
             # Step 1: Get the list of artists associated with the user's email
-            artist_select_stmt = text("SELECT artist FROM userArtist WHERE email = :email")
+            artist_select_stmt = text("""
+                SELECT userArtist.artist, artists.image
+                FROM userArtist
+                JOIN artists ON userArtist.artist = artists.artist
+                WHERE userArtist.email = :email
+            """)
             artist_result = connection.execute(artist_select_stmt, {"email": email}).fetchall()
-            user_artists = [row[0] for row in artist_result]
+
+            user_artists = [(row[0], row[1]) for row in artist_result]  # list of tuples (artist, image)
 
             if not user_artists:
                 return jsonify({"message": "No artists found for this user"}), 404
 
+            # Get the list of artist names for the query
+            artist_names = [artist[0] for artist in user_artists]
+
             # Dynamically generate placeholders for the artist list
-            placeholders = ", ".join([f":artist_{i}" for i in range(len(user_artists))])
-            event_select_stmt = text(f"SELECT artist, eventname, location, date FROM events WHERE artist IN ({placeholders})")
+            placeholders = ", ".join([f":artist_{i}" for i in range(len(artist_names))])
+            event_select_stmt = text(f"""
+                SELECT events.artist, events.eventname, events.location, events.date, artists.image
+                FROM events
+                JOIN artists ON events.artist = artists.artist
+                WHERE events.artist IN ({placeholders})
+            """)
 
             # Create the dictionary for binding parameters dynamically
-            artist_params = {f"artist_{i}": artist for i, artist in enumerate(user_artists)}
+            artist_params = {f"artist_{i}": artist for i, artist in enumerate(artist_names)}
 
             # Execute the query with the dynamically created artist parameters
             event_result = connection.execute(event_select_stmt, artist_params).fetchall()
 
             # Step 3: Format the events list to return as JSON
-            events = [{
-                "Artist Name": row[0],  # artist
-                "Event Name": row[1],   # eventname
-                "Location": row[2],     # location
-                "Event Date": row[3]    # date
-            } for row in event_result]
+            events = [
+                {
+                    "Artist Name": row[0],  # artist
+                    "Event Name": row[1],   # eventname
+                    "Location": row[2],     # location
+                    "Event Date": row[3],   # date
+                    "Image": row[4] or 'https://via.placeholder.com/150'  # image, with fallback to placeholder
+                }
+                for row in event_result
+            ]
 
             if not events:
                 return jsonify({"message": "No events found for the user's artists"}), 404

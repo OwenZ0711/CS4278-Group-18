@@ -90,7 +90,7 @@ function EventList() {
             filteredEvents.map((event, index) => (
               <div key={index} className="event-item">
                 <img 
-                  src={'https://picsum.photos/60?random=' + (index + 11)} 
+                  src={event["Image"] || 'https://via.placeholder.com/150'}
                   alt={event["Artist Name"] || 'Unknown Artist'} 
                   className="event-photo" 
                 />
