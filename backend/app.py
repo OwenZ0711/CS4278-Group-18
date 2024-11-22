@@ -254,9 +254,9 @@ def callback():
     # # Remove the temporary entry after saving to database
     #     del temp_users[email]
     print("redirect to playlist")
-    return redirect('/playlists')
+    return redirect('/playlists', code=302)
     #return jsonify({"message": "authentication finished with process:"}, session['calling_type']), 200
-  return redirect("https://frontend2-covqbyf8a-sihan-yes-projects.vercel.app/my-artist", code=400)
+  return jsonify("something wrong"), 400
 
 @app.route('/playlists')
 def get_playlists():
@@ -339,7 +339,7 @@ def get_playlists():
         print(f"Error occurred while inserting into database tables: {str(e)}")
         return jsonify({"message": f"Error inserting into database tables: {str(e)}"}), 500
 
-    #return redirect("https://frontend2-covqbyf8a-sihan-yes-projects.vercel.app/my-artist", code=302)
+    return redirect("https://frontend2-covqbyf8a-sihan-yes-projects.vercel.app/my-artist", code=302)
 
 @app.route('/artist-list', methods = ['GET'])
 def get_artist_list():
