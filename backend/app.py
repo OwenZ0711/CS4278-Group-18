@@ -11,7 +11,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 
 tm_API_KEY = 'NDuQyZHdaWVNgxW9ss0aS896Fu84VUmo'
 tm_BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
-domain = 'q64tkbwsh'
+domain = 'mzsz5lrj5'
 
 
 def get_artist_events(artist_name):
