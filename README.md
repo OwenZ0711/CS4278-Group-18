@@ -17,3 +17,7 @@ Back end: Python, MySQL
 **Deployment process**
 Front end: Vercel
 Backend: Heroku
+
+# Environemnt Setup
+frontend: npm install
+backend: pip install -r requirements.txt
