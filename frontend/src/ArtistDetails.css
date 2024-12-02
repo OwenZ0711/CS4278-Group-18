@@ -1,21 +1,22 @@
 /* Overall page layout */
 .artist-details-page {
-  display: flex;
-  flex-direction: column;
+  position: absolute;
+  right: 0;
   height: 100vh;
-  width: 100vw;
+  width: 84%;
   overflow: hidden;
 }
 
-/* Sidebar */
+/* Sidebar 
+ min-width: 200px;*/
 .sidebar {
+  z-index: 999;
   width: 15%;
-  min-width: 200px;
   background-color: #f0f0f0;
   height: 100vh;
   padding: 20px;
   box-sizing: border-box;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   overflow-y: auto;
@@ -50,17 +51,16 @@
   padding: 20px;
   background-color: white;
   border-bottom: 1px solid #ddd;
-  position: fixed;
+  position: relative;
   top: 0;
-  left: 15%;
   right: 0;
   z-index: 10;
-  height: 20%;
+  height: 26%;
   max-height: 200px;
 }
 
 .artist-photo {
-  width: 12%;
+  width: 8.5%;
   max-width: 150px;
   height: auto;
   border-radius: 50%;
@@ -79,20 +79,23 @@
 
 /* Main content */
 .artist-details-container {
-  margin-top: 10%;
-  margin-left: 25%;
+  margin-top: 20%; /* Matches the height of the artist-header */
+  margin-left: 15%; /* Matches the sidebar width */
   padding: 20px;
   box-sizing: border-box;
-  height: calc(85vh - 20px);
+  height: calc(80vh - 20px); /* Adjust height to leave room for header */
   overflow-y: auto;
 }
 
 .artist-events {
+  position: relative;
+  margin-top: 1rem;
   padding: 10px 0;
 }
 
 /* Event item layout */
 .event-item {
+  margin-right: 1.5rem;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr; /* Divide into three equal sections */
   gap: 10px;
@@ -127,15 +130,11 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
     padding: 10px;
   }
 
   .artist-header {
     top: 0;
-    left: 0;
     height: auto;
     flex-wrap: wrap;
     text-align: center;

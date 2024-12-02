@@ -31,7 +31,7 @@ function ChangePassword() {
 
     // Make a request to change the password
     try {
-      const response = await fetch('http://localhost:5000/change-password', {
+      const response = await fetch('https://backendtest3-b4ff149de3c9.herokuapp.com/change-password', {
         method: 'POST',
         credentials: 'include',
         headers: {

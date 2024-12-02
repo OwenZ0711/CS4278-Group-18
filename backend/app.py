@@ -9,6 +9,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 
 tm_API_KEY = 'NDuQyZHdaWVNgxW9ss0aS896Fu84VUmo'
 tm_BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
+domain = 'iovmp3qnv'
 
 def get_artist_events(artist_name):
     params = {
@@ -58,11 +59,15 @@ db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6s
 
 # Initialize Flask and enable CORS
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": f"https://frontend2-{domain}-sihan-yes-projects.vercel.app"}},
+     supports_credentials=True,
+     methods=["GET", "POST", "OPTIONS"],  # Allowed methods
+     allow_headers=["Content-Type", "Authorization"])  # Allowed headers
 # Configure the secret key and Flask-Session
 app.secret_key = "4278427842784278"  # Generates a random key
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the file system
-
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True 
 # Initialize the session
 Session(app)
 
@@ -147,7 +152,6 @@ def password_setup():
 def location_selection():
     data = request.get_json()
     location = (data.get('country'), data.get('state'))
-    print(session['password'])
     if location[0] == None or location[1] == None:
         session['location'] = None
         return jsonify({"message": "Location is required"}), 400
@@ -161,9 +165,6 @@ def complete_registration():
     email = session.get("email")
     password = session.get('password')
     location = session.get('location')
-    print("email", email)
-    print("password", password)
-    print('location', location)
 
     if not all([email, password, location]):
         return jsonify({"message": "Incomplete registration data"}), 400
@@ -236,19 +237,11 @@ def callback():
     response = requests.post(Key.TOKEN_URL, data=req_body)
     token_info = response.json()
     session['access_token'] = token_info['access_token']
-    # if session.get("calling_type", None) == "register":
-    #     with engine.connect() as connection:
-    #       try:
-    #           insert_stmt = users_table.insert().values(email=email, password=hashed_password)
-    #           connection.execute(insert_stmt)
-    #       except Exception as e:
-    #           return jsonify({"message": f"Error saving to database: {str(e)}"}), 500
-
-    # # Remove the temporary entry after saving to database
-    #     del temp_users[email]
+    
     print("redirect to playlist")
-    return redirect('/playlists')
-    #return jsonify({"message": "authentication finished with process:"}, session['calling_type']), 200
+    return redirect('/playlists', code=302)
+  
+  return jsonify("something wrong"), 400
 
 @app.route('/playlists')
 def get_playlists():
@@ -258,6 +251,8 @@ def get_playlists():
 
     # Get user's liked songs
     response = requests.get(Key.API_BASE_URL + "me/tracks", headers=headers)
+    if response.status_code != 200:
+            return jsonify({"message": "Failed to fetch liked songs", "status": "error"}), 500
     liked_songs_album = response.json()
     liked_songs = liked_songs_album['items']
     artist_set = {
@@ -366,7 +361,7 @@ def get_playlists():
         print(f"Error occurred while inserting into database tables: {str(e)}")
         return jsonify({"message": f"Error inserting into database tables: {str(e)}"}), 500
 
-    return redirect("http://localhost:3000/my-artist", code=302)
+    return redirect(f"https://frontend2-{domain}-sihan-yes-projects.vercel.app/my-artist", code=302)
 
 @app.route('/artist-list', methods = ['GET'])
 def get_artist_list():
@@ -474,8 +469,8 @@ def get_profile():
 
         if result:
             profile_data = {
-                "email": result[0],
-                "location": result[2]
+                "email": result['email'],
+                "location": result['userlocation']
             }
             return jsonify(profile_data), 200
         else:
@@ -510,7 +505,7 @@ def change_password():
             return jsonify({"message": "User not found."}), 404
 
         # Access the 'password' column by name instead of index
-        stored_hashed_password = user[1]  # Use 'password' column name
+        stored_hashed_password = user['password']  # Use 'password' column name
 
         # Verify the current password
         if not bcrypt.checkpw(current_password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
@@ -579,4 +574,4 @@ def get_artist_details(artist_name):
         return jsonify({"message": f"Error fetching artist details: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', debug=True)

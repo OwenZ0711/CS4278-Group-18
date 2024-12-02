@@ -49,12 +49,14 @@
 
 /* Main container */
 .event-list-container {
-  margin-left: 15%; /* Matches the sidebar width dynamically */
+  /* margin-left: 15%; Matches the sidebar width dynamically */
   width: 85%; /* Takes up the remaining space */
   padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
   height: 100vh;
+  position: absolute;
+  right: 0;
 }
 
 /* Header section */
@@ -161,8 +163,9 @@
   }
 
   .event-list-container {
+    position: absolute;
     margin-left: 5%;
-    width: 95%;
+    width: 80%;
   }
 
   .event-item {
@@ -179,7 +182,7 @@
 
   .event-list-container {
     margin-left: 0%;
-    width: 100%;
+    width: 80%;
     padding: 5px;
   }
 

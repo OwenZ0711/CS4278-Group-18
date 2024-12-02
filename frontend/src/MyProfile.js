@@ -15,7 +15,7 @@ function MyProfile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/profile', {
+        const response = await fetch('https://backendtest3-b4ff149de3c9.herokuapp.com/profile', {
           method: 'GET',
           credentials: 'include',
           headers: {

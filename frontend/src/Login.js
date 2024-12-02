@@ -20,7 +20,7 @@ function Login() {
 
     // Call to backend login endpoint
     try {
-      const response = await fetch('http://localhost:5000/login', {  // Backend URL
+      const response = await fetch('https://backendtest3-b4ff149de3c9.herokuapp.com/login', {  // Backend URL
         method: 'POST',
         credentials: "include",
         headers: { 'Content-Type': 'application/json' },
@@ -50,7 +50,7 @@ function Login() {
   function requestAuthorization() {
     const CLIENT_ID = '5de8da9998ff4436abab42f799e1476c';  // Replace with your Spotify client ID
     const CLIENT_SECERT = 'ed07ca9837c240fea4b153a56566f3b0';  // Replace with your Spotify client secret
-    const REDIRECT_URI = 'http://localhost:5000/loading';  // Replace with your redirect URI
+    const REDIRECT_URI = 'https://backendtest3-b4ff149de3c9.herokuapp.com/loading';  // Replace with your redirect URI
     const AUTH_URL = 'https://accounts.spotify.com/authorize';
 
     // Store credentials in localStorage (not secure, for demonstration only)
