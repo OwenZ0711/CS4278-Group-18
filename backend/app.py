@@ -468,8 +468,8 @@ def get_profile():
 
         if result:
             profile_data = {
-                "email": result['email'],
-                "location": result['userlocation']
+                "email": result[0],
+                "location": result[2]
             }
             return jsonify(profile_data), 200
         else:
