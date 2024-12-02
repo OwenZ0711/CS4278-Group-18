@@ -44,7 +44,7 @@ function MyProfile() {
     // Logic for logging out
     console.log('User logged out');
     // Redirect to the login page or any other desired action
-    navigate('/login');
+    navigate('/');
   };
 
   const handleChangePassword = () => {
