@@ -1,5 +1,21 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    {
+      "source": "/my-artist",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/artist-details/:artistName",
+      "destination": "/index.html"
+    }
+  ],
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
   ]
 }
