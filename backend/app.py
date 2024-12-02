@@ -504,7 +504,7 @@ def change_password():
             return jsonify({"message": "User not found."}), 404
 
         # Access the 'password' column by name instead of index
-        stored_hashed_password = user['password']  # Use 'password' column name
+        stored_hashed_password = user[1]  # Use 'password' column name
 
         # Verify the current password
         if not bcrypt.checkpw(current_password.encode('utf-8'), stored_hashed_password.encode('utf-8')):
