@@ -9,7 +9,6 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 
 tm_API_KEY = 'NDuQyZHdaWVNgxW9ss0aS896Fu84VUmo'
 tm_BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
-domain = 'iovmp3qnv'
 
 def get_artist_events(artist_name):
     params = {
@@ -59,7 +58,7 @@ db_connection_str = 'mysql+mysqlconnector://imusic:imusicdb@imusic-db.cvwseqsk6s
 
 # Initialize Flask and enable CORS
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": f"https://frontend2-{domain}-sihan-yes-projects.vercel.app"}},
+CORS(app, resources={r"/*": {"origins": f"https://cs-4278-group-18-ten.vercel.app"}},
      supports_credentials=True,
      methods=["GET", "POST", "OPTIONS"],  # Allowed methods
      allow_headers=["Content-Type", "Authorization"])  # Allowed headers
@@ -361,7 +360,7 @@ def get_playlists():
         print(f"Error occurred while inserting into database tables: {str(e)}")
         return jsonify({"message": f"Error inserting into database tables: {str(e)}"}), 500
 
-    return redirect(f"https://frontend2-{domain}-sihan-yes-projects.vercel.app/my-artist", code=302)
+    return redirect(f"https://cs-4278-group-18-ten.vercel.app/my-artist", code=302)
 
 @app.route('/artist-list', methods = ['GET'])
 def get_artist_list():
