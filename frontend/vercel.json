@@ -1,13 +1,14 @@
 {
   "rewrites": [
-    {
-      "source": "/my-artist",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/artist-details/:artistName",
-      "destination": "/index.html"
-    }
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/register", "destination": "/index.html" },
+    { "source": "/password-setup", "destination": "/index.html" },
+    { "source": "/location-selection", "destination": "/index.html" },
+    { "source": "/my-artist", "destination": "/index.html" },
+    { "source": "/event-list", "destination": "/index.html" },
+    { "source": "/my-profile", "destination": "/index.html" },
+    { "source": "/change-password", "destination": "/index.html" },
+    { "source": "/artist-details/:artistName", "destination": "/index.html" }
   ],
   "builds": [
     {
