@@ -94,7 +94,7 @@ function EventList() {
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Search Artist"
+            placeholder="Search Artist/Event name/Location/Date"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             id="search-artist"
