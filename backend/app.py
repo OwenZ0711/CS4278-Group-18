@@ -262,12 +262,14 @@ def callback():
 
 @app.route('/playlists')
 def get_playlists():
+    print("access token is", session['access_token'])
     headers = {
         'Authorization': f"Bearer {session['access_token']}"
     }
 
     # Get user's liked songs
     response = requests.get(Key.API_BASE_URL + "me/tracks", headers=headers)
+    print("response status code is: ",response.status_code)
     if response.status_code != 200:
             return jsonify({"message": "Failed to fetch liked songs", "status": "error"}), 500
     liked_songs_album = response.json()
