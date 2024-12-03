@@ -13,7 +13,14 @@ Back end: Python, MySQL
 - Access user artists' preferences and artist tour schedules from Spotify API.
 - Use Google API to access hotels and restaurants around located events.
 - Search for specific artists' events and recommend them based on the above functionality.
-- Notification of new events or event changes. 
+- Notification of new events or event changes.
+
+# Package Installation (No need for using deployed domain: https://cs-4278-group-18-ten.vercel.app)
+cd backend
+pip install -r requirements.txt
+
+cd frontend
+npm install
 
 # Test
 To start the test for backend: 
