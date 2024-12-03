@@ -40,11 +40,30 @@ function EventList() {
     fetchEvents();
   }, []);
 
+  // // Filter events based on search term
+  // useEffect(() => {
+  //   const filtered = events.filter(event =>
+  //     event["Artist Name"] && event["Artist Name"].toLowerCase().includes(searchTerm.toLowerCase())
+  //   );
+  //   setFilteredEvents(filtered);
+  // }, [searchTerm, events]);
+
   // Filter events based on search term
   useEffect(() => {
-    const filtered = events.filter(event =>
-      event["Artist Name"] && event["Artist Name"].toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = events.filter(event => {
+      const artistName = event["Artist Name"] ? event["Artist Name"].toLowerCase() : '';
+      const location = event.Location ? event.Location.toLowerCase() : '';
+      const eventName = event["Event Name"] ? event["Event Name"].toLowerCase() : '';
+      const eventDate = event["Event Date"] ? new Date(event["Event Date"]).toLocaleDateString().toLowerCase() : '';
+      const search = searchTerm.toLowerCase();
+
+      return (
+        artistName.includes(search) ||
+        location.includes(search) ||
+        eventName.includes(search) ||
+        eventDate.includes(search)
+      );
+    });
     setFilteredEvents(filtered);
   }, [searchTerm, events]);
 
