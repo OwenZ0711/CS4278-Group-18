@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, redirect, session
 from flask_cors import CORS
 from flask_session import Session
-import backend.InfoKey as Key
+from backend import InfoKey as Key
 import bcrypt
 import requests
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, text, insert, Date, select, update
