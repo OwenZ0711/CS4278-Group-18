@@ -251,7 +251,7 @@ def get_playlists():
 
     # Get user's liked songs
     response = requests.get(Key.API_BASE_URL + "me/tracks", headers=headers)
-    print("response status code is:", jsonify(response))
+    print("response status code is:", response)
     if response.status_code != 200:
             return jsonify({"message": "Failed to fetch liked songs", "status": "error"}), 500
     liked_songs_album = response.json()
