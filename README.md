@@ -1,4 +1,5 @@
 ## CS4278-Group-18
+# Notice, Branch: localHostBranch is deployed both front-end and back-end on public domain. https://cs-4278-group-18-ten.vercel.app
 # About Project	
 Our project is designed to help music lovers who struggle to find a comprehensive list of concerts or music festivals featuring their favorite artists. What sets our project apart is its playlist integration, allowing users to automatically receive event recommendations based on their listening habits. Additionally, users can rank artists from favorite to least favorite, apply customizable filters, and receive highly personalized notifications. The platform's advanced location-based recommendations also adapt to where the user is or where they plan to go, offering suggestions that fit their preferences in both local and travel destinations.
 
