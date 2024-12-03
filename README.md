@@ -14,3 +14,17 @@ Back end: Python, MySQL
 - Use Google API to access hotels and restaurants around located events.
 - Search for specific artists' events and recommend them based on the above functionality.
 - Notification of new events or event changes. 
+
+# Test
+To start the test for backend: 
+cd backend
+pytest --cov=app --cov-report=html
+
+To view the coverage:
+ls
+cd htmlcov
+open index.html
+
+To start the test for backend: 
+cd frontend
+npm test
