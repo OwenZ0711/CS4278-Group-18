@@ -65,7 +65,7 @@ CORS(app, resources={r"/*": {"origins": f"https://cs-4278-group-18-ten.vercel.ap
 # Configure the secret key and Flask-Session
 app.secret_key = "4278427842784278"  # Generates a random key
 app.config['SESSION_TYPE'] = 'filesystem'  # Store sessions on the file system filesystem
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'
 app.config['SESSION_COOKIE_SECURE'] = True 
 # Initialize the session
 Session(app)
