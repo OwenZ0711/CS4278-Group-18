@@ -16,22 +16,22 @@ Back end: Python, MySQL
 - Notification of new events or event changes.
 
 # Package Installation (No need for using deployed domain: https://cs-4278-group-18-ten.vercel.app)
-cd backend
-pip install -r requirements.txt
+- cd backend
+- pip install -r requirements.txt
 
-cd frontend
-npm install
+- cd frontend
+- npm install
 
 # Test
 To start the test for backend: 
-cd backend
-pytest --cov=app --cov-report=html
+- cd backend
+- pytest --cov=app --cov-report=html
 
 To view the coverage:
-ls
-cd htmlcov
-open index.html
+- ls
+- cd htmlcov
+- open index.html
 
 To start the test for backend: 
-cd frontend
-npm test
+- cd frontend
+- npm test
